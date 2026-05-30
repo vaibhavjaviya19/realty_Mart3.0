@@ -124,11 +124,13 @@
                 </div>
                 <!-- I agree to RealtyMart.com T&C, Privacy Policy, & Cookie Policy  -->
               </div>
-              <div class="text-center">
-                <button class="reg_sub" type="submit"
-                  [disabled]="registerError || serviceTypeError || companyError || phoneError || emailError">Sign
-                  up</button>
-              </div>
+            <div class="text-center mt-3">
+              <button class="reg_sub" type="submit"
+                [disabled]="isSubmitting || registerError || serviceTypeError || companyError || phoneError || emailError">
+                <span *ngIf="isSubmitting" class="text-light spinner-border spinner-border-sm me-2" role="status"></span>
+                {{ isSubmitting ? 'Processing...' : 'Sign up' }}
+              </button>
+            </div>
               <div>
                 <a target="_blank" routerlink="/login" class="dropdown-item pt-2" href="/login">Already registered?
                   <span> Login Now </span></a>
@@ -184,16 +186,16 @@
                   </div>
                 </div>
                 <div class="modal-footer border-0 flex-column text-center">
-                  <button type="button" class="btn reg_sub" (click)="verifyOTP()">
+                  <button type="button" class="btn reg_sub" [disabled]="isSubmitting" (click)="verifyOTP()">
                     
-                      <span *ngIf="!isLoading" class="text-light">Verify</span>
+                      <span *ngIf="!isSubmitting" class="text-light">Verify</span>
                       
-                      <span *ngIf="isLoading" class="text-light">
+                      <span *ngIf="isSubmitting" class="text-light">
                         <span class="btn-spinner"></span> Processing...
                       </span>
                   </button>
                   <div>
-                    <label *ngIf="!isResendEnabled && !isLoading" class="resend-label mb-3" style="cursor: pointer">
+                    <label *ngIf="!isResendEnabled && !isSubmitting" class="resend-label mb-3" style="cursor: pointer">
                       You will receive OTP within
                       <b style="color: #ff5444"> 00:{{ remainingTime }}</b>
                       seconds

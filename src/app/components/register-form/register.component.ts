@@ -108,7 +108,6 @@ export class RegisterComponent implements OnDestroy {
   openModel = 0;
   selectedService: string = '';
   remainingTime: number = 60;
-  isLoading = true;
   private timer: any;
   constructor(
     private http: HttpClient,
@@ -438,44 +437,77 @@ export class RegisterComponent implements OnDestroy {
     return this.formData.register_as === 'service-provider';
   }
   sendOTPToMobile() {
-    this.isLoading = true;
-    this.spinner.show();
-    this.http
-      .post(`${this.apiUrl}sendotp`, {
-        mobile_no: this.formData.mobile_no,
-      })
-      .subscribe(
-        (response: any) => {
-          if(response.data =='ok') {
-            if (response.status === true) {
-            // this.sendOTPToMobile();
-            const modalElement = this.otpModel.nativeElement;
-            const modal = new bootstrap.Modal(modalElement);
-            modal.show();
-            this.toastr.success('OTP Sent Successfully.');
-          }
-          if (response.code === 101) {
-            this.toastr.warning(response.message);
-          }
-        }
-        else if (response.code === 101) {
-          this.toastr.warning(response.message);
-        }
-        else {
-          this.phoneError = true;
-        }
+
+  this.spinner.show();
+
+  this.isSubmitting = true;
+ 
+  this.http
+
+    .post(`${this.apiUrl}sendotp`, {
+
+      mobile_no: this.formData.mobile_no,
+
+    })
+
+    .subscribe({
+
+      next: (response: any) => {
+
         this.spinner.hide();
-        this.isLoading = false;
-        this.startTimer();
-        },
-        (error) => {
-          this.toastr.error('Failed to send OTP.');
-          console.error('Error sending OTP', error);
-          this.spinner.hide();
-          this.isLoading = false;
+
+ 
+        if (response.status === true) {
+ 
+          // Small delay to give SMS time to arrive
+
+          setTimeout(() => {
+        this.isSubmitting = false;
+
+            this.startTimer();
+
+            const modalElement = this.otpModel.nativeElement;
+
+            const modal = new bootstrap.Modal(modalElement);
+
+            modal.show();
+ 
+            this.toastr.success('OTP Sent! Please check your mobile.', 'Success');
+
+          }, 2500); // Adjust between 2000-3500 ms
+ 
+        } 
+
+        else if (response.code === 101) {
+
+          this.toastr.warning(response.message);
+
+        } 
+
+        else {
+
+          this.toastr.error(response.message || 'Failed to process request');
+
         }
-      );
-  }
+
+      },
+
+      error: (err) => {
+
+        this.spinner.hide();
+
+        this.isSubmitting = false;
+
+        this.toastr.error('Network error. Please try again.');
+
+        console.error(err);
+
+      }
+
+    });
+
+}
+ 
   resendOTP() {
     clearInterval(this.timer);
     this.startTimer();
