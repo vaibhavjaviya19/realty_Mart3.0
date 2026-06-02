@@ -7,7 +7,7 @@ export const environment = {
   // apiUrl:'https://myrealtyunlimited.com/new-myrealty/api/',
   // apiUrl:'https://demo.myrealtyunlimited.com/new-myrealty/api/'
   // apiUrl:'https://www.realtymart.com/realtymart/backend/api/',
-  // apiUrl:'https://realtymart.com/backend/api/',
-  apiUrl:'https://test.realtymart.com/backend/api/',
+  apiUrl:'https://realtymart.com/backend/api/',
+  // apiUrl:'https://test.realtymart.com/backend/api/',
 };
   

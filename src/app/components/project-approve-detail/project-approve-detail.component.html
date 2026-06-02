@@ -1033,7 +1033,7 @@
                               {{ item.name }}
                             </div>
                             <span class="pdp__landmarks__card__item--bold">
-                              ({{ item.distance_km }})
+                              ({{ item.distance_km }} km)
                             </span>
                           </div>
                         </ng-container>
@@ -1643,7 +1643,7 @@
           (click)="setGalleryImage(i)">
           <img *ngIf="galleryActiveTab !== 'video'" [src]="item" alt="thumb" />
           <div *ngIf="galleryActiveTab === 'video'" class="gallery-thumb-video">
-            <img *ngIf="item.thumbnail" [src]="item.thumbnail" alt="Video thumb" />
+            <img [src]="item.thumbnail" alt="Video thumb" />
             <span class="gallery-thumb-video-icon">&#9654;</span>
           </div>
         </div>

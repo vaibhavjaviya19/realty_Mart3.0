@@ -997,11 +997,11 @@ export class ProjectApproveDetailComponent implements OnInit, AfterViewInit, OnD
             this.videoAlbum = Array.isArray(this.singleproject?.project_video)
               ? this.singleproject.project_video.map((video: any) => ({
                   link: video.proj_video_link,
-                  thumbnail: video.project_banner_image ? imageBaseUrl + video.project_banner_image : null
+                  thumbnail: video.proj_video_thumbnail ? video.proj_video_thumbnail : null
                 }))
               : (this.singleproject?.project_video ? [{
                   link: this.singleproject.project_video.proj_video_link,
-                  thumbnail: this.singleproject.project_video.project_banner_image ? imageBaseUrl + this.singleproject.project_video.project_banner_image : null
+                  thumbnail: this.singleproject.proj_video_thumbnail ? this.singleproject.proj_video_thumbnail : null
                 }] : []);
 
             // Auto-select first tab that has content
