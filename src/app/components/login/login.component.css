@@ -5,6 +5,7 @@
   height: 100vh;
   position: relative;
 }
+
 .login_brg:before {
   content: "";
   position: absolute;
@@ -13,6 +14,7 @@
   width: 100%;
   height: -webkit-fill-available;
 }
+
 .login_box {
   padding: 20px;
   background: #fff;
@@ -24,27 +26,30 @@
 }
 
 
-.error-message-login{
+.error-message-login {
   color: red;
 }
-.gold-form-input
-{
+
+.gold-form-input {
   margin-bottom: 0px;
 }
-.error-message-login
-{
+
+.error-message-login {
   margin-bottom: 0px;
 }
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    margin: 0; 
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 0;
 }
+
 span {
-    color: red;
+  color: red;
 }
+
 @media only screen and (max-width: 768px) {
   .login_box {
     padding: 20px;
@@ -70,6 +75,6 @@ span {
 }
 
 
-.country_code{
+.country_code {
   width: 17%;
 }

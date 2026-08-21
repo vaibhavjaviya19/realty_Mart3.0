@@ -150,13 +150,13 @@
                 </div>
               </div>
 
-              <div class="pp-form__fieldset pb-3">
+              <div class="pp-form__fieldset">
                 <div class="pp-form__fieldset__heading mb-2">Property Status</div>
                 <input type="hidden" id="property__status" value />
                 <input type="hidden" id="property__status" value />
                 <input type="hidden" id="property__status" value />
                 <div class="pp-form__fieldset__wrap">
-                  <div class="pp-form__elem-radio" style="width: 90px; height: 44px">
+                  <div class="pp-form__elem-radio">
                     <input class="pp-form__elem-radio__input" formControlName="property_status" type="radio"
                       id="Featured" autocomplete="off" [value]="'Featured'" />
 
@@ -164,14 +164,14 @@
                       Featured
                     </label>
                   </div>
-                  <div class="pp-form__elem-radio" style="width: 120px; height: 44px">
+                  <div class="pp-form__elem-radio">
                     <input class="pp-form__elem-radio__input" formControlName="property_status" type="radio"
                       id="Running" autocomplete="off" [value]="'Running'" />
                     <label class="pp-form__elem-radio__label" for="Running">
                       Running
                     </label>
                   </div>
-                  <div class="pp-form__elem-radio" style="width: 100px; height: 44px">
+                  <div class="pp-form__elem-radio">
                     <input class="pp-form__elem-radio__input" formControlName="property_status" type="radio"
                       id="Complete" autocomplete="off" [value]="'Completed'" />
                     <label class="pp-form__elem-radio__label" for="Complete">
@@ -215,7 +215,7 @@
               </div>
 
               <div class="property_loaction post_fm">
-                <h4 class="title-property mt-4 pb-3">Property Location</h4>
+                <h4 class="title-property mt-4 mb-0 pb-3">Property Location</h4>
 
                 <div class="formCom">
                   <select formControlName="property_city" id="city" class="gold-form-input post_fm"
@@ -494,7 +494,7 @@
                             selectli: showFloorSection && selectedFloorOption
                           }">{{ floorNoselectedValue }}</span>
                       <ul *ngIf="isfloorNoDropdownOpen">
-                        <li *ngFor="let option of floorNoOptions" (click)="selectFloorOption(option)">
+                        <li *ngFor="let option of floorNoOptions" (click)="selectFloorOption(option)" [ngClass]="{ selectli: selectedFloorOption === option }">
                           {{ option }}
                         </li>
                       </ul>
@@ -525,7 +525,7 @@
                         totalFloorselectedValue
                         }}</span>
                       <ul *ngIf="isfloorDropdownOpen">
-                        <li *ngFor="let foption of flooroptions" (click)="selectTotalFloorDropdownOption(foption)">
+                        <li *ngFor="let foption of flooroptions" (click)="selectTotalFloorDropdownOption(foption)" [ngClass]="{ selectli: selectedTotalFloorOption === foption }">
                           {{ foption }}
                         </li>
                       </ul>
@@ -709,7 +709,7 @@
                       <div class="custom-select" (click)="toggleDropdown()">
                         <span [ngClass]="{ selectli: showSection && selectedOption }">{{ selectedValue }}</span>
                         <ul *ngIf="isDropdownOpen">
-                          <li *ngFor="let option of options" (click)="selectOption(option)">
+                          <li *ngFor="let option of options" (click)="selectOption(option)" [ngClass]="{ selectli: selectedOption === option }">
                             {{ option }}
                           </li>
                         </ul>
@@ -762,7 +762,7 @@
                               showBathRoomSection && selectedBathRoomOption
                           }">{{ selectBathRoomsValue }}</span>
                         <ul *ngIf="isbathRoomDropdownOpen">
-                          <li *ngFor="let option of bathRoomoptions" (click)="selectBathRoomOption(option)">
+                          <li *ngFor="let option of bathRoomoptions" (click)="selectBathRoomOption(option)" [ngClass]="{ selectli: selectedBathRoomOption === option }">
                             {{ option }}
                           </li>
                         </ul>
@@ -793,7 +793,7 @@
                               showBalconySection && selectedBalconiesOption
                           }">{{ selectedBalconiesValue }}</span>
                         <ul *ngIf="isbalconiDropdownOpen">
-                          <li *ngFor="let option of baconiesoptions" (click)="selectBalconiesOption(option)">
+                          <li *ngFor="let option of baconiesoptions" (click)="selectBalconiesOption(option)" [ngClass]="{ selectli: selectedBalconiesOption === option }">
                             {{ option }}
                           </li>
                         </ul>
@@ -1059,7 +1059,7 @@
               </div> -->
 
               <div class="area_property post_fm" id="area">
-                <h4 class="title-property m-0 pb-3"
+                <h4 class="title-property m-0 pb-3 mt-4"
                   [style.display]="['1', '3', '4', '5', '8', '9', '10', '11', '12', '16', '17', '18', '19', '20', '21'].includes(selectedPropertyType) ? 'block' : 'none'">
                   Area
                 </h4>
@@ -1307,7 +1307,7 @@
 
               <div class="transaction" id="transactionheadertitle">
                 <h4 class="title-property mt-4 pb-3">Transaction Type, Property Availability</h4>
-                <div id="transactiontypeclass">
+                <div class="pb-4" id="transactiontypeclass">
                   <div class="col-md-6" id="possessionstatusfornotaplot"
                     [style.display]="['1', '3', '4', '8', '10', '11', '12', '16', '18', '19', '20'].includes(selectedPropertyType) ? 'block' : 'none'">
                     <label for="Possession-Status">Possession Status</label>
@@ -2059,108 +2059,107 @@
           </div>
         </div>
         <div class="col-lg-4">
-            <div class="posting-card mt-4 mt-md-0">
-              <h5 class="posting-title">
-                You are posting this property for
-              </h5>
+          <div class="posting-card mt-4 mt-md-0">
+            <h5 class="posting-title">
+              You are posting this property for
+            </h5>
 
-              <div class="price">
-                ₹5000 <span>Free</span>
-              </div>
-
-              <div class="benefits">
-
-                <div class="benefit-item">
-                  <span class="check-icon">✓</span>
-                  <span>Free Professional Photoshoot</span>
-                </div>
-
-                <div class="benefit-item">
-                  <span class="check-icon">✓</span>
-                  <span>Get Contact Details of upto 5 Responses</span>
-                </div>
-
-                <div class="benefit-item">
-                  <span class="check-icon">✓</span>
-                  <span>Access to 15 Lac Buyers & Tenants</span>
-                </div>
-
-              </div>
+            <div class="price">
+              ₹5000 <span>Free</span>
             </div>
-            <div class="buyer-card mt-4">
 
-              <h5 class="buyer-title">
-                How can you identify the<br>
-                appropriate buyer?
-              </h5>
+            <div class="benefits">
 
-              <!-- Item 1 -->
-              <div class="buyer-item">
-
-                <div class="buyer-icon">
-                  📞
-                </div>
-
-                <div class="buyer-content">
-                  <div class="buyer-heading">
-                    Reply to inquiries from potential<br>
-                    buyers.
-                  </div>
-
-                  <p>
-                    Engage with buyers when they reach out
-                    about your property.
-                  </p>
-
-                  <a href="javascript:void(0)" class="contact-link">
-                    View upto 5 contact details for FREE!
-                  </a>
-                </div>
-
+              <div class="benefit-item">
+                <span class="check-icon">✓</span>
+                <span>Free Professional Photoshoot</span>
               </div>
 
-              <hr>
-
-              <!-- Item 2 -->
-              <div class="buyer-item">
-
-                <div class="buyer-icon">
-                  👤
-                </div>
-
-                <div class="buyer-content">
-                  <div class="buyer-heading">
-                    Engage with buyers that match your<br>
-                    criteria.
-                  </div>
-
-                  <p>
-                    Proactively search for compatible
-                    buyers and establish connections.
-                  </p>
-                </div>
-
+              <div class="benefit-item">
+                <span class="check-icon">✓</span>
+                <span>Get Contact Details of upto 5 Responses</span>
               </div>
 
-              <hr>
+              <div class="benefit-item">
+                <span class="check-icon">✓</span>
+                <span>Access to 15 Lac Buyers & Tenants</span>
+              </div>
 
-              <!-- Item 3 -->
-              <div class="buyer-item">
+            </div>
+          </div>
+          <div class="buyer-card mt-4">
 
-                <div class="buyer-icon">
-                  📱
+            <h5 class="buyer-title">
+              How can you identify the<br>
+              appropriate buyer?
+            </h5>
+
+            <!-- Item 1 -->
+            <div class="buyer-item">
+
+              <div class="buyer-icon">
+                📞
+              </div>
+
+              <div class="buyer-content">
+                <div class="buyer-heading">
+                  Reply to inquiries from potential<br>
+                  buyers.
                 </div>
 
-                <div class="buyer-content">
-                  <div class="buyer-heading">
-                    Download the App
-                  </div>
+                <p>
+                  Engage with buyers when they reach out
+                  about your property.
+                </p>
 
-                  <p>
-                    Receive instant notifications for every
-                    new buyer inquiry and establish
-                    immediate connections.
-                  </p>
+                <a href="javascript:void(0)" class="contact-link">
+                  View upto 5 contact details for FREE!
+                </a>
+              </div>
+
+            </div>
+
+            <hr>
+
+            <!-- Item 2 -->
+            <div class="buyer-item">
+
+              <div class="buyer-icon">
+                👤
+              </div>
+
+              <div class="buyer-content">
+                <div class="buyer-heading">
+                  Engage with buyers that match your criteria.
+                </div>
+
+                <p>
+                  Proactively search for compatible
+                  buyers and establish connections.
+                </p>
+              </div>
+
+            </div>
+
+            <hr>
+
+            <!-- Item 3 -->
+            <div class="buyer-item">
+
+              <div class="buyer-icon">
+                📱
+              </div>
+
+              <div class="buyer-content">
+                <div class="buyer-heading">
+                  Download the App
+                </div>
+
+                <p>
+                  Receive instant notifications for every
+                  new buyer inquiry and establish
+                  immediate connections.
+                </p>
               </div>
 
             </div>
@@ -2171,3 +2170,27 @@
     </div>
   </section>
 </main>
+
+<!-- Auth Choice Modal -->
+<div class="modal fade" id="authChoiceModal" tabindex="-1" aria-labelledby="authChoiceModalLabel" aria-hidden="true" #authChoiceModal>
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+    <div class="modal-content p-4" style="border-radius: 12px; border: 1px solid #e0e0e0; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold mb-0" style="color: #222; font-size: 22px;">Login</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="py-2">
+        <p class="text-secondary small mb-3">Please log in or sign up to complete posting your property.</p>
+        <button type="button" (click)="goToLogin()" class="btn w-100 py-2 mb-3 fw-bold text-white" style="background-color: #ef3f23; border-radius: 6px; font-size: 16px;">
+          Login
+        </button>
+        <div class="pt-2 text-start">
+          <span style="font-size: 15px; color: #333;">New to RealtyMart? </span>
+          <a href="javascript:void(0)" (click)="goToRegister()" style="color: #ef3f23; font-weight: 700; text-decoration: none; font-size: 16px;">
+            Sign Up
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

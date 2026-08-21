@@ -604,6 +604,9 @@ export class HomeComponent implements AfterViewInit, OnInit {
   }
   toggleDisplayDivcom() {
     this.visible = !this.visible;
+    if (!this.visible) {
+      this.Commercialvisible = false;
+    }
   }
 
   @HostListener('window:scroll', ['$event'])
@@ -613,6 +616,7 @@ export class HomeComponent implements AfterViewInit, OnInit {
       return;
     }
     this.visible = false;
+    this.Commercialvisible = false;
     this.togglebudget = false;
     this.showLocationDropdown = false;
     this.showCitySelectorDropdown = false;
@@ -637,6 +641,7 @@ export class HomeComponent implements AfterViewInit, OnInit {
       !clickedElement.closest('.property_inner')
     ) {
       this.visible = false;
+      this.Commercialvisible = false;
     }
 
     if (!clickedElement.closest('.budget_dorp') && !clickedElement.closest('.budget-inner')) {
@@ -1008,29 +1013,90 @@ export class HomeComponent implements AfterViewInit, OnInit {
 
     this.searchCityApiSubscription = this.http.get(apiUrl).subscribe(
       (res: any) => {
-        if (res && res.isSuccess && Array.isArray(res.responseData)) {
-          const apiSuggestions: Array<{ name: string; category: string; slug?: string; rawData?: any }> = [];
+        const apiSuggestions: Array<{ name: string; category: string; slug?: string; rawData?: any }> = [];
 
+        if (res && res.isSuccess && Array.isArray(res.responseData)) {
           res.responseData.forEach((item: any) => {
-            const itemType = (item.type || '').toLowerCase();
-            if (itemType === 'area' || itemType === 'locality' || (!itemType && itemType !== 'builder' && itemType !== 'project' && itemType !== 'city')) {
+            const itemType = (item.type || item.category || '').toLowerCase();
+            const name = item.name || item.builder_name || item.builderName || item.project_name || item.projectName || item.title || '';
+
+            if (!name) return;
+
+            if (itemType === 'builder' || item.builderUrl || item.builder_url || item.is_builder) {
               apiSuggestions.push({
-                name: item.name,
+                name: name,
+                category: 'Builder',
+                slug: item.builderUrl || item.builder_url || item.slug || item.url || item.id || '',
+                rawData: item
+              });
+            } else if (itemType === 'project' || item.projectUrl || item.project_url || item.firstUrlPart || item.is_project) {
+              apiSuggestions.push({
+                name: name,
+                category: 'Project',
+                slug: item.firstUrlPart || item.projectUrl || item.project_url || item.slug || item.url || '',
+                rawData: item
+              });
+            } else if (itemType === 'city') {
+              apiSuggestions.push({
+                name: name || item.cname,
+                category: 'CITY',
+                slug: item.slug || '',
+                rawData: item
+              });
+            } else {
+              apiSuggestions.push({
+                name: name || item.locality_name || item.area_name,
                 category: 'Area',
                 slug: item.slug || '',
                 rawData: item
               });
             }
           });
-
-          this.locationSuggestions = apiSuggestions;
-          this.showLocationDropdown = this.locationSuggestions.length > 0;
-          this.selectedSuggestionIndex = -1;
-        } else {
-          this.locationSuggestions = [];
-          this.showLocationDropdown = false;
-          this.selectedSuggestionIndex = -1;
         }
+
+        // Local Builders matching
+        const lowerQuery = query.toLowerCase();
+        if (Array.isArray(this.topbuilders)) {
+          this.topbuilders.forEach((builder: any) => {
+            const bName = builder.name || builder.builder_name || builder.builderName || '';
+            if (bName && bName.toLowerCase().includes(lowerQuery)) {
+              if (!apiSuggestions.some(s => s.category === 'Builder' && s.name.toLowerCase() === bName.toLowerCase())) {
+                apiSuggestions.push({
+                  name: bName,
+                  category: 'Builder',
+                  slug: builder.builderUrl || builder.builder_url || builder.id || '',
+                  rawData: builder
+                });
+              }
+            }
+          });
+        }
+
+        // Local Projects matching
+        const allProjects = [
+          ...(Array.isArray(this.featuredResidentals) ? this.featuredResidentals : []),
+          ...(Array.isArray(this.featuredcommercials) ? this.featuredcommercials : []),
+          ...(Array.isArray(this.featuredBunglowss) ? this.featuredBunglowss : []),
+          ...(Array.isArray(this.ahmedabadProjects) ? this.ahmedabadProjects : [])
+        ];
+
+        allProjects.forEach((proj: any) => {
+          const pName = proj.project_name || proj.name || proj.projectName || '';
+          if (pName && pName.toLowerCase().includes(lowerQuery)) {
+            if (!apiSuggestions.some(s => s.category === 'Project' && s.name.toLowerCase() === pName.toLowerCase())) {
+              apiSuggestions.push({
+                name: pName,
+                category: 'Project',
+                slug: proj.firstUrlPart || proj.projectUrl || proj.project_url || proj.slug || (pName ? pName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : ''),
+                rawData: proj
+              });
+            }
+          }
+        });
+
+        this.locationSuggestions = apiSuggestions;
+        this.showLocationDropdown = this.locationSuggestions.length > 0;
+        this.selectedSuggestionIndex = -1;
       },
       (error) => {
         console.error('Error fetching searchcity suggestions:', error);
@@ -1157,15 +1223,30 @@ export class HomeComponent implements AfterViewInit, OnInit {
       this.loadHomeBanner();
       this.loadAhmedabadProjects();
     } else if (item.category === 'Project') {
-      const slug = item.slug || (item.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      let slug = item.slug || item.rawData?.firstUrlPart || item.rawData?.projectUrl || item.rawData?.project_url || item.rawData?.slug;
+      if (!slug && item.rawData?.id) {
+        const projName = (item.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        slug = `${projName}-${item.rawData.id}`;
+      } else if (!slug && item.name) {
+        slug = item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      }
+
       if (slug) {
-        this.router.navigate(['/' + slug]);
+        if (slug.startsWith('/')) {
+          this.router.navigateByUrl(slug);
+        } else {
+          this.router.navigate(['/' + slug]);
+        }
       }
       this.locationInputText = '';
       this.showLocationDropdown = false;
       return;
     } else if (item.category === 'Builder') {
-      const slug = item.slug || (item.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      let slug = item.slug || item.rawData?.builderUrl || item.rawData?.builder_url || item.rawData?.slug || item.rawData?.id;
+      if (!slug && item.name) {
+        slug = item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      }
+
       if (slug) {
         this.router.navigate(['/builder-detail', slug]);
       }

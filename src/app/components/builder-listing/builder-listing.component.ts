@@ -89,7 +89,7 @@ export class BuilderListingComponent implements OnInit{
     }
   }
   ngOnInit(): void {
-    const city = this.route.snapshot.paramMap.get('city');
+    this.city = this.route.snapshot.paramMap.get('city');
     
       this.seoService.setCanonicalURL(
         window.location.href

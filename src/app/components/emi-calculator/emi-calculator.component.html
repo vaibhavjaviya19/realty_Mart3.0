@@ -1,12 +1,10 @@
 <main>
-<section class="home-loan position-relative">
-  <div class="overlay">
+<section class="home-loan position-relative" *ngIf="!compact">
     <div class="container">
         <div class="banner-small">
             <h1 class="banner_title">Home Loan EMI Calculator</h1>
         </div>
     </div>
-  </div>
 </section>
 
 <section class="clc-box">
@@ -122,7 +120,7 @@
   </div>
 </section>
 
-<section class="home-loan-clc">
+<section class="home-loan-clc" *ngIf="!compact">
     <div class="container">
         <h2 class="home-loantitle">Home Loan EMI Calculator</h2>
         <p class="emi-text">A home loan EMI calculator is a tool that helps you calculate your monthly instalments (EMIs) with just one click. Home loan calculator is really helpful and can be used easily by any individual who wants to know their Home Loan EMIs in advance.</p>

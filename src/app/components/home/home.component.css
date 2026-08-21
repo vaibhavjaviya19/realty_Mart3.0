@@ -568,3 +568,7 @@
   background: #f0fdf4;
   color: #16a34a;
 }
+
+.mb-search__property__title label.rotated:after {
+  transform: rotate(180deg);
+}

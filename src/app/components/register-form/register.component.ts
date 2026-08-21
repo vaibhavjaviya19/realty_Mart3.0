@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
+import { HeaderService } from '../service/header.service';
 import { HttpClient } from '@angular/common/http';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Router } from '@angular/router';
@@ -119,7 +120,8 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
     private spinner: NgxSpinnerService,
     private fb: FormBuilder,
     private route: Router,
-    private seoService:SeoService
+    private seoService:SeoService,
+    private headerService: HeaderService
   ) {
     this.country();
     this.services();
@@ -280,22 +282,30 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     if (
-      this.formData.register_as === 'service-provider' &&
-      (!this.formData.register_type || this.formData.register_type === '')
+      (this.formData.register_as === 'service-provider' || this.servicess === 1) &&
+      (!this.formData.register_type || this.formData.register_type === '' || this.formData.register_type === 'Select Service Type')
     ) {
       this.serviceTypeError = true;
     }
 
-    if (!this.formData.comapny_name) {
+    if (!this.formData.comapny_name || this.formData.comapny_name.trim() === '') {
       this.companyError = true;
+      if (this.formData.register_as === 'User') {
+        this.companyErrorMessage = 'Please enter user name.';
+      } else {
+        this.companyErrorMessage = 'Please enter company name.';
+      }
     }
 
     if (!this.formData.mobile_no || this.phoneError) {
       this.phoneError = true;
     }
 
-    if (!this.formData.email || this.emailError) {
+    if (!this.formData.email || this.emailError || this.formData.email.trim() === '') {
       this.emailError = true;
+      if (!this.formData.email || this.formData.email.trim() === '') {
+        this.emailErrorMessage = 'Please enter email address.';
+      }
     }
 
     if (
@@ -340,9 +350,13 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
   validateEmail(event: any) {
     const inputValue = event.target.value;
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,5}$/;
-    // this.emailError = !emailPattern.test(inputValue);
+    if (!inputValue || inputValue.trim() === '') {
+      this.emailErrorMessage = "Please enter email address.";
+      this.emailError = true;
+      return;
+    }
     if (!emailPattern.test(inputValue)) {
-      if (inputValue.startsWith(" ") ||inputValue.endsWith(" ")) {
+      if (inputValue.startsWith(" ") || inputValue.endsWith(" ")) {
         this.emailErrorMessage = "Spaces are not allowed in the email address.";
       } else {
         this.emailErrorMessage = "Invalid email address format.";
@@ -350,31 +364,19 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
       this.emailError = true;
     } else {
       this.emailError = false;
+      this.emailErrorMessage = "";
     }
   }
 
 
 
-  // validateUserName(event: any) {
-  //   const inputValue = event.target.value;
-  //   const companyPattern = /^[a-zA-Z]+(?:\s[a-zA-Z]+)*$/;
-
-  //   if (!companyPattern.test(inputValue)) {
-  //   if (inputValue.startsWith(" ") || inputValue.endsWith(" ")) {
-  //     this.companyErrorMessage = "Spaces are not allowed at the beginning or end.";
-  //   }
-  //   else if (/\s{2,}/.test(inputValue)) {
-  //     this.companyErrorMessage = "Multiple consecutive spaces are not allowed.";
-  //   }
-  //   else {
-  //     this.companyErrorMessage = "Invalid user name.";
-  //   }
-  // }
-  //   this.companyError = !companyPattern.test(inputValue);
-  // }
-
   validateUserName(event: any) {
     let inputValue = event.target.value;
+    if (!inputValue || inputValue.trim() === '') {
+      this.companyErrorMessage = "Please enter user name.";
+      this.companyError = true;
+      return;
+    }
     const namePattern = /^[a-zA-Z]+(?:\s[a-zA-Z]+)*$/;
 
     if (!namePattern.test(inputValue)) {
@@ -398,6 +400,11 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
 
   validateCompanyName(event: any) {
     const inputValue = event.target.value;
+    if (!inputValue || inputValue.trim() === '') {
+      this.companyErrorMessage = "Please enter company name.";
+      this.companyError = true;
+      return;
+    }
     const companyPattern = /^(?! )[a-zA-Z0-9!@#$%^&*()_+={}\[\]:;"'<>,.?/-]+(?:\s[a-zA-Z0-9!@#$%^&*()_+={}\[\]:;"'<>,.?/-]+)*(?!\s)$/;
 
     if (!companyPattern.test(inputValue)) {
@@ -409,8 +416,11 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
       else {
         this.companyErrorMessage = "Invalid company name.";
       }
+      this.companyError = true;
+    } else {
+      this.companyError = false;
+      this.companyErrorMessage = "";
     }
-    this.companyError = !companyPattern.test(inputValue);
   }
 
   validatePersonName(event: any) {
@@ -614,79 +624,42 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   submitOTP() {
-    // this.registerError = false;
-    // this.serviceTypeError = false;
-    // this.companyError = false;
-    // this.phoneError = false;
-    // this.emailError = false;
+  this.spinner.show();
+  this.http
+    .post(`${this.apiUrl}inquiryStore`, this.formData)
+    .subscribe(
+      (response: any) => {
+        if (response.status == true) {
+          // Auto login
+          if (response.data?.token) {
+            localStorage.setItem('myrealtylogintoken', response.data.token);
+            localStorage.setItem('contact_no', response.data.contact_no);
+            localStorage.setItem('userId', response.data.id);
+            localStorage.setItem('role', response.data.role);
+            localStorage.setItem('name', response.data.name);
+            localStorage.setItem('email', response.data.email);
 
-    // if (!this.formData.register_as) {
-    //   this.registerError = true;
-    // }
-
-    // if (
-    //   this.formData.register_as === 'service-provider' &&
-    //   (!this.formData.register_type || this.formData.register_type === '')
-    // ) {
-    //   this.serviceTypeError = true;
-    // }
-
-    // if (!this.formData.comapny_name) {
-    //   this.companyError = true;
-    // }
-
-    // if (!this.formData.mobile_no || this.phoneError) {
-    //   this.phoneError = true;
-    // }
-
-    // if (!this.formData.email || this.emailError) {
-    //   this.emailError = true;
-    // }
-
-    // if (
-    //   this.registerError ||
-    //   this.serviceTypeError ||
-    //   this.companyError ||
-    //   this.personError ||
-    //   this.designationError ||
-    //   this.phoneError ||
-    //   this.emailError
-    // ) {
-    //   return;
-    // }
-    this.spinner.show();
-    this.http
-      .post(
-        `${this.apiUrl}inquiryStore`,
-        this.formData
-      )
-      .subscribe(
-        (response: any) => {
-          if (response.status == true) {
-            this.route.navigate(['/thank-you-register']);
-            // this.toastr.success(response.success);
-            // this.spinner.hide();
-            // const modalElement = document.getElementById('successModal');
-            // const successModal = new bootstrap.Modal(modalElement!);
-            // successModal.show();
-            // setTimeout(() => {
-            //   successModal.hide();
-            // }, 3000);
-            // setTimeout(() => {
-            //     window.location.reload();
-            // }, 2000);
-          } else if (response.status == false) {
-            this.resetForm();
-            this.spinner.hide();
-            this.toastr.warning(response.message);
+            this.headerService.triggerRefresh();
           }
-        },
-        (error) => {
-          console.error('Error sending data', error);
-        }
-      );
-  }
 
+          this.spinner.hide();
+          this.toastr.success('Registration successful! Welcome to RealtyMart.');
+
+          // Go to Thank You page
+          this.route.navigate(['/thank-you-register']);
+        } else if (response.status == false) {
+          this.resetForm();
+          this.spinner.hide();
+          this.toastr.warning(response.message);
+        }
+      },
+      (error) => {
+        console.error('Error sending data', error);
+        this.spinner.hide();
+        this.toastr.error('Something went wrong. Please try again.');
+      }
+    );
+  }
 
   resetForm() {
     this.formData = {

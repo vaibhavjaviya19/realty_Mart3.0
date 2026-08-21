@@ -124,7 +124,8 @@ activeSection:any;
     dots: true,
     arrows: true,
     infinite: true,
-    // autoplay: true,
+    autoplay: true,
+    autoplaySpeed: 3000,
     prevArrow:
       "<img class='a-left control-c prev slick-prev' src='../assets/images/prev.svg'>",
     nextArrow:
@@ -1034,7 +1035,8 @@ activeSection:any;
     dots: true,
     arrows: false,
     infinite: true,
-    // "autoplay":true,
+    autoplay: true,
+    autoplaySpeed: 3000,
     responsive: [
       {
         breakpoint: 1535,

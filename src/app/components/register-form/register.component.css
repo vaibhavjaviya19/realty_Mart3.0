@@ -22,7 +22,7 @@ span {
   max-width: 598px;
   margin: 0 auto;
   font-weight: 500;
-  font-size: 48px;
+  font-size: 32px;
 }
 .reg_form h3 {
   margin: 20px 0 12px;
@@ -152,7 +152,7 @@ input[type="radio"] {
   width: 100%;
   border: 0;
   border-bottom: 1px solid #666666;
-  padding: 5px;
+  padding: 8px;
   /* margin-bottom: 23px; */
 }
 

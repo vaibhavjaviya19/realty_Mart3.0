@@ -44,6 +44,10 @@ export class HeaderComponent implements AfterViewInit {
   locationFooter: any;
   validCities: string[] = ['Ahmedabad', 'Rajkot', 'Surat', 'Vadodara', 'Mumbai', 'Navi Mumbai', 'Pune', 'Bangalore', 'NCR', 'Delhi', 'Gurgaon', 'Hyderabad'];
   isMenuCollapsed: boolean = true;
+  userName: string = '';
+  userEmail: string = '';
+  userInitial: string = '';
+  isProfileDropdownOpen: boolean = false;
 
   toggleMenu() {
     this.isMenuCollapsed = !this.isMenuCollapsed;
@@ -51,6 +55,24 @@ export class HeaderComponent implements AfterViewInit {
 
   closeMenu() {
     this.isMenuCollapsed = true;
+  }
+
+  toggleProfileDropdown(event: MouseEvent): void {
+    event.stopPropagation();
+    event.preventDefault();
+    this.isProfileDropdownOpen = !this.isProfileDropdownOpen;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (this.elementRef && this.elementRef.nativeElement) {
+      const profileWrap = this.elementRef.nativeElement.querySelector('.profile-header-wrap');
+      if (profileWrap && profileWrap.contains(target)) {
+        return;
+      }
+    }
+    this.isProfileDropdownOpen = false;
   }
 
   @HostListener('window:scroll', [])
@@ -74,9 +96,7 @@ export class HeaderComponent implements AfterViewInit {
     private headerService: HeaderService,
     private renderer: Renderer2
   ) {
-    if (this.checkToken == null || this.checkToken == undefined) {
-      this.checkToken = localStorage.getItem('myrealtylogintoken');
-    }
+    this.updateUserData();
 
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'instant' });
@@ -94,17 +114,21 @@ export class HeaderComponent implements AfterViewInit {
       if (refresh) {
         this.getLocation();
         this.getLocations();
-        if (this.checkToken == null || this.checkToken == undefined) {
-          this.checkToken = localStorage.getItem('myrealtylogintoken');
-        }
+        this.updateUserData();
         this.headerService.resetRefresh();
       }
     });
     this.getLocation();
     this.getLocations();
-    if (this.checkToken == null || this.checkToken == undefined) {
-      this.checkToken = localStorage.getItem('myrealtylogintoken');
-    }
+    this.updateUserData();
+  }
+
+  updateUserData(): void {
+    this.checkToken = localStorage.getItem('myrealtylogintoken');
+    this.userName = localStorage.getItem('name') || '';
+    this.userEmail = localStorage.getItem('email') || '';
+    const trimmedName = this.userName.trim();
+    this.userInitial = trimmedName ? trimmedName.charAt(0).toUpperCase() : 'U';
   }
 
   getLocation() {

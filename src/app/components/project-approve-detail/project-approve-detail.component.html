@@ -78,7 +78,27 @@
       <!-- Right Section -->
       <div
         class="col-lg-6 mt-md-5 mt-4 col-md-4 d-flex justify-content-md-center justify-content-lg-end justify-content-center align-self-end">
-        <div class="d-flex flex-wrap justify-content-lg-end gap-2">
+        <div style="margin-left:-118px;" class="d-flex flex-wrap justify-content-lg-end gap-2">
+          <button data-bs-toggle="modal" data-bs-target="#EmiCalculatorModal"
+            class="btn d-flex align-items-center justify-content-center gap-2 action-btn emi-btn uppercase"
+            title="EMI Calculator" aria-label="EMI Calculator">
+            <span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="2" width="16" height="20" rx="2" />
+                <line x1="8" y1="6" x2="16" y2="6" />
+                <circle cx="8" cy="11" r="0.75" fill="currentColor" stroke="none" />
+                <circle cx="12" cy="11" r="0.75" fill="currentColor" stroke="none" />
+                <circle cx="16" cy="11" r="0.75" fill="currentColor" stroke="none" />
+                <circle cx="8" cy="15" r="0.75" fill="currentColor" stroke="none" />
+                <circle cx="12" cy="15" r="0.75" fill="currentColor" stroke="none" />
+                <circle cx="16" cy="15" r="0.75" fill="currentColor" stroke="none" />
+                <line x1="8" y1="18.5" x2="16" y2="18.5" />
+              </svg>
+            </span>
+            EMI CALCULATOR
+          </button>
+
           <div class="contact-container-relative">
             <button [attr.data-bs-toggle]="is_token ? null : 'modal'"
               [attr.data-bs-target]="is_token ? null : '#get-builder'"
@@ -108,12 +128,14 @@
             (click)="is_token ? downloadBrochureDirectly() : openOtpModal('brochure')"
             *ngIf="isPdf(singleproject?.project_brochure)"
             class="btn btn-dark d-flex align-items-center gap-2 action-btn download-btn">
-            <span><img class="download-icon-img" src="../../../assets/images/download.svg" alt="download" srcset=""></span>
+            <span><img class="download-icon-img" src="../../../assets/images/download.svg" alt="download"
+                srcset=""></span>
             Brochure
           </button>
 
         </div>
       </div>
+
 
     </div>
 
@@ -170,6 +192,26 @@
         </div>
         <!-- Right Section: Action Buttons (same color and design) -->
         <div class="col-lg-6 col-md-7 d-flex justify-content-end align-items-center gap-2">
+          <button style="padding: 0px 80px;" data-bs-toggle="modal" data-bs-target="#EmiCalculatorModal"
+            class="btn d-flex align-items-center justify-content-center gap-2 action-btn emi-btn uppercase"
+            title="EMI Calculator" aria-label="EMI Calculator">
+            <span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="2" width="16" height="20" rx="2" />
+                <line x1="8" y1="6" x2="16" y2="6" />
+                <circle cx="8" cy="11" r="0.75" fill="currentColor" stroke="none" />
+                <circle cx="12" cy="11" r="0.75" fill="currentColor" stroke="none" />
+                <circle cx="16" cy="11" r="0.75" fill="currentColor" stroke="none" />
+                <circle cx="8" cy="15" r="0.75" fill="currentColor" stroke="none" />
+                <circle cx="12" cy="15" r="0.75" fill="currentColor" stroke="none" />
+                <circle cx="16" cy="15" r="0.75" fill="currentColor" stroke="none" />
+                <line x1="8" y1="18.5" x2="16" y2="18.5" />
+              </svg>
+            </span>
+            EMI CALCULATOR
+          </button>
+
           <div class="contact-container-relative">
             <button [attr.data-bs-toggle]="is_token ? null : 'modal'"
               [attr.data-bs-target]="is_token ? null : '#get-builder'"
@@ -199,7 +241,8 @@
             (click)="is_token ? downloadBrochureDirectly() : openOtpModal('brochure')"
             *ngIf="isPdf(singleproject?.project_brochure)"
             class="btn btn-dark d-flex align-items-center gap-2 action-btn download-btn">
-            <span><img class="download-icon-img" src="../../../assets/images/download.svg" alt="download" srcset=""></span>
+            <span><img class="download-icon-img" src="../../../assets/images/download.svg" alt="download"
+                srcset=""></span>
             Brochure
           </button>
         </div>
@@ -545,7 +588,7 @@
               [attr.data-bs-target]="is_token ? null : '#get-builder'"
               (click)="is_token ? downloadBrochureDirectly() : openOtpModal('brochure')">
               <img class="download-icon-img" src="../../../assets/images/download.svg" alt="download" srcset="">
-              Brochure
+              Download Brochure
             </button>
 
           </div>
@@ -590,52 +633,67 @@
           <div (scroll)="checkScrollPosition()" class="developer-slider" #slider>
 
             <div class="developer-card cursor-pointer" (click)="openDeveloperProject(item)"
-              *ngFor="let item of developerProjects;">
+              *ngFor="let item of developerProjects; let i = index">
 
-              <div class="card h-100">
+              <div class="card h-100 developer-listing-card">
 
                 <div class="card-img-wrapper">
-                  <img [src]="item.image" alt="developer-Projects" class="img-fluid w-100">
+                  <img [src]="getDeveloperImages(item)[getDeveloperCardImageIndex(i)] || item.image"
+                    alt="developer-Projects" class="img-fluid w-100 developer-card-img">
+
+                  <!-- Dots only (auto-slide) — no arrow buttons -->
+                  <div class="developer-card-dots" *ngIf="getDeveloperImages(item).length > 1"
+                    (click)="$event.stopPropagation()">
+                    <span class="developer-dot" *ngFor="let img of getDeveloperImages(item); let di = index"
+                      [class.active]="getDeveloperCardImageIndex(i) === di"
+                      (click)="setDeveloperCardImage(i, di, $event)">
+                    </span>
+                  </div>
                 </div>
 
-                <div class="card-body">
+                <div class="card-body developer-card-body">
 
-                  <h6 class="project-name">
-                    {{ item.developer_name }}
-                  </h6>
-
-                  <h3 class="builder-name mb-1">
-                    {{ item.builder_group_name }}
-                  </h3>
-
-                  <p class="location-developer mb-3 d-flex align-items-end">
-                    <span class="pe-1"><img src="../../../assets/images/location-icon-2.svg" alt="location-icon"
-                        srcset=""></span>
-                    {{ item.developer_address }}
-                  </p>
-
-                  <hr>
-
-                  <div class="project-info">
-
-                    <div class="d-flex justify-content-between mb-2">
-                      <span>Availability:</span>
-                      <span>{{ item.availability }}</span>
-                    </div>
-
-                    <div class="d-flex justify-content-between" *ngIf="item.area">
-                      <span>Area:</span>
-                      <span>{{ item.area }}</span>
-                    </div>
-
+                  <div class="developer-title-row">
+                    <h6 class="project-name mb-0">{{ item.developer_name }}</h6>
+                    <button type="button" class="developer-share-btn" title="Share"
+                      (click)="shareDeveloperProject(item, $event)">
+                      <i class="fa-solid fa-share-nodes"></i>
+                    </button>
                   </div>
 
-                </div>
+                  <!-- Locality + City (e.g. Sola, Ahmedabad) -->
+                  <p class="location-developer mb-2 d-flex align-items-center">
+                    <span class="pe-1">
+                      <img src="../../../assets/images/location-icon-2.svg" alt="location-icon" srcset="">
+                    </span>
+                    {{ getDeveloperLocation(item) }}
+                  </p>
 
-                <div class="price-bar">
-                  Price : ₹ {{ item.minprice }} - {{ item.maxprice }}
-                </div>
+                  <!-- BHK (not date) + Price -->
+                  <div class="developer-meta-row">
+                    <span class="developer-type" *ngIf="item.bhkLabel">
+                      {{ item.bhkLabel }}
+                    </span>
+                    <span class="developer-price" *ngIf="item.minprice || item.maxprice">
+                      ₹{{ item.minprice }}{{ item.maxprice ? ' - ₹' + item.maxprice : '' }}
+                    </span>
+                  </div>
 
+                  <!-- OLD LAYOUT kept commented
+                  <h3 class="builder-name mb-1">{{ item.builder_group_name }}</h3>
+                  <hr>
+                  <div class="project-info">
+                    <div class="d-flex justify-content-between mb-2">
+                      <span>Availability:</span><span>{{ item.availability }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between" *ngIf="item.area">
+                      <span>Area:</span><span>{{ item.area }}</span>
+                    </div>
+                  </div>
+                  <div class="price-bar">Price : ₹ {{ item.minprice }} - {{ item.maxprice }}</div>
+                  -->
+
+                </div>
               </div>
 
             </div>
@@ -750,7 +808,8 @@
           }}</a>
       </div>
     </div>
-    <button  *ngIf="singleproject?.project_contact_no" [attr.data-bs-toggle]="is_token ? null : 'modal'" [attr.data-bs-target]="is_token ? null : '#get-builder'"
+    <button *ngIf="singleproject?.project_contact_no" [attr.data-bs-toggle]="is_token ? null : 'modal'"
+      [attr.data-bs-target]="is_token ? null : '#get-builder'"
       (click)="is_token ? redirectToWhatsApp() : openOtpModal('whatsapp')"
       class="btn whatsapp-btn flex-grow-1 d-flex align-items-center justify-content-center gap-2">
       <span><img src="../../../assets/images/whatsapp.svg" alt="whatsapp" srcset=""></span>
@@ -1021,6 +1080,28 @@
           <button *ngIf="!brochureOtpVisible" type="button" class="pp-form__cta mt-3" [disabled]="isBrochureSendingOtp"
             (click)="sendBrochureOTP()">{{ isBrochureSendingOtp ? 'Sending OTP...' : 'Submit' }}</button>
         </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EMI Calculator Modal -->
+<div class="modal fade" id="EmiCalculatorModal" tabindex="-1" aria-labelledby="emiCalculatorModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen modal-dialog-centered emi-modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header sign-in-box emi-modal-header">
+        <h2 class="fill_one" id="emiCalculatorModalLabel">EMI Calculator</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body emi-modal-body">
+        <!-- compact=true hides the banner + "how to use" article, so only
+             the interactive calculator shows. initialAmount sets the
+             loan-amount slider's cursor to this project's max price. -->
+        <div class="emi-modal-inner">
+          <app-emi-calculator *ngIf="singleproject" [compact]="true"
+            [initialAmount]="singleproject.project_maximum_price"></app-emi-calculator>
+        </div>
       </div>
     </div>
   </div>
@@ -1440,8 +1521,12 @@
         </div>
         <div class="input-group">
           <input type="text" class="form-control" [value]="reelDynamicUrl" readonly>
-          <button class="btn btn-outline-secondary" type="button" (click)="copyReelLink($event)">Copy</button>
+          <button class="btn" [ngClass]="isLinkCopied ? 'btn-success' : 'btn-outline-secondary'" type="button"
+            (click)="copyReelLink($event)">
+            {{ isLinkCopied ? 'Copied!' : 'Copy' }}
+          </button>
         </div>
+
       </div>
     </div>
   </div>

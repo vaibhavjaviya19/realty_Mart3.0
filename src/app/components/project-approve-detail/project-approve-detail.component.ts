@@ -207,6 +207,7 @@ export class ProjectApproveDetailComponent implements OnInit, AfterViewInit, OnD
     slidesToShow: 4,
     slidesToScroll: 1,
     dots: true,
+    autoplay:true,
     arrows: true,
     infinite: false,
     prevArrow: "<img class='a-left control-c prev slick-prev' src='assets/images/prev.svg'>",
@@ -242,7 +243,8 @@ export class ProjectApproveDetailComponent implements OnInit, AfterViewInit, OnD
   };
 
   developerProjects: any[] = [];
-
+  developerCardImageIndex: { [key: number]: number } = {};
+  private developerCardAutoplayTimer: any = null;
 
   specifications = [
     {
@@ -374,6 +376,7 @@ export class ProjectApproveDetailComponent implements OnInit, AfterViewInit, OnD
   brochureSlideConfig = {
     slidesToShow: 2,
     slidesToScroll: 1,
+    autoplay:true,
     dots: true,
     arrows: true,
     infinite: false
@@ -403,7 +406,7 @@ export class ProjectApproveDetailComponent implements OnInit, AfterViewInit, OnD
     private sanitizer: DomSanitizer,
     private router: Router,
     private countrycodeService: CountrycodeService,
-    private seoService:SeoService,
+    private seoService: SeoService,
     private propertyresidentialservice: PropertytyperesidentialService,
     private propertycommercialservice: PropertytypecommercialService,
     private propertyotherservice: PropertytypeothertypesService,
@@ -1019,7 +1022,7 @@ export class ProjectApproveDetailComponent implements OnInit, AfterViewInit, OnD
   ngOnInit(): void {
     const slug = this.route.snapshot.paramMap.get('slug');
     const id = this.route.snapshot.paramMap.get('id');
-     this.seoService.setCanonicalURL(window.location.href);
+    this.seoService.setCanonicalURL(window.location.href);
     this.checkScreenSize();
     const token = localStorage.getItem('myrealtylogintoken');
     if (token) {
@@ -1080,10 +1083,10 @@ export class ProjectApproveDetailComponent implements OnInit, AfterViewInit, OnD
       if (!isNaN(lat) && !isNaN(lng)) {
         this.center = { lat, lng };
         this.markerPosition = { lat, lng };
-       const query = `${this.singleproject.project_address}`;
+        const query = `${this.singleproject.project_address}`;
 
-this.googleMapUrl =
-  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+        this.googleMapUrl =
+          `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
       }
     }
   }
@@ -1517,17 +1520,21 @@ this.googleMapUrl =
   }
 
   slideLeft() {
-    this.slider.nativeElement.scrollBy({
-      left: -320,
-      behavior: 'smooth'
-    });
+    if (!this.slider?.nativeElement) return;
+    const el = this.slider.nativeElement as HTMLElement;
+    const card = el.querySelector('.developer-card') as HTMLElement;
+    const gap = 16;
+    const amount = card ? card.offsetWidth + gap : 300;
+    el.scrollBy({ left: -amount, behavior: 'smooth' });
   }
 
   slideRight() {
-    this.slider.nativeElement.scrollBy({
-      left: 320,
-      behavior: 'smooth'
-    });
+    if (!this.slider?.nativeElement) return;
+    const el = this.slider.nativeElement as HTMLElement;
+    const card = el.querySelector('.developer-card') as HTMLElement;
+    const gap = 16;
+    const amount = card ? card.offsetWidth + gap : 300;
+    el.scrollBy({ left: amount, behavior: 'smooth' });
   }
 
   resendOTP() {
@@ -2132,7 +2139,8 @@ this.googleMapUrl =
             if (this.photoAlbum.length > 0) this.galleryActiveTab = 'photos';
             else if (this.layoutAlbum.length > 0) this.galleryActiveTab = 'layout';
             else if (this.videoAlbum.length > 0) this.galleryActiveTab = 'video';
-            this.developerProjects = this.singleproject.aboutDeveloperProjects;
+            this.developerProjects = this.mapDeveloperProjects(this.singleproject.aboutDeveloperProjects);
+            this.startDeveloperCardAutoplay();
             // Populate reviews via separate API
             this.fetchProjectReviews(this.singleproject.id);
 
@@ -2478,6 +2486,7 @@ this.googleMapUrl =
   }
 
   ngOnDestroy(): void {
+    this.stopDeveloperCardAutoplay();
     (window as any).__projectDetailActive = false;
     const header = document.querySelector('header');
     if (header) {
@@ -2770,11 +2779,19 @@ this.googleMapUrl =
     window.open(facebookUrl, '_blank');
   }
 
+  isLinkCopied: boolean = false;
+  linkCopyTimeout: any;
+
   copyReelLink(event: MouseEvent) {
     navigator.clipboard.writeText(this.reelDynamicUrl).then(() => {
-      this.toastr.success('Reel link copied to clipboard!');
+      this.toastr.success('Link copied to clipboard!');
+      this.isLinkCopied = true;
+      if (this.linkCopyTimeout) clearTimeout(this.linkCopyTimeout);
+      this.linkCopyTimeout = setTimeout(() => {
+        this.isLinkCopied = false;
+      }, 2500);
     }, () => {
-      this.toastr.error('Failed to copy reel link.');
+      this.toastr.error('Failed to copy link.');
     });
   }
 
@@ -3406,7 +3423,7 @@ this.googleMapUrl =
       }
 
       if (selectedSegmentsLower.length > 0) {
-        const matchesSegment = selectedSegmentsLower.some(seg => 
+        const matchesSegment = selectedSegmentsLower.some(seg =>
           reel._cachedSegmentLower.includes(seg) || seg.includes(reel._cachedSegmentLower) ||
           (reel._cachedSegmentArray && reel._cachedSegmentArray.some((cs: string) => cs.includes(seg) || seg.includes(cs)))
         );
@@ -3416,7 +3433,7 @@ this.googleMapUrl =
       }
 
       if (selectedTypesLower.length > 0) {
-        const matchesType = selectedTypesLower.some(st => 
+        const matchesType = selectedTypesLower.some(st =>
           reel._cachedTypesLower.some((rt: string) => rt.includes(st) || st.includes(rt))
         );
         if (!matchesType) {
@@ -3425,7 +3442,7 @@ this.googleMapUrl =
       }
 
       if (selectedBHKsLower.length > 0) {
-        const matchesBHK = selectedBHKsLower.some(sb => 
+        const matchesBHK = selectedBHKsLower.some(sb =>
           reel._cachedBhksLower.some((rb: string) => this.matchBHKItem(sb, rb))
         );
         if (!matchesBHK) {
@@ -3495,7 +3512,7 @@ this.googleMapUrl =
           } else if (Array.isArray(proj.proj_video_file)) {
             vFiles = proj.proj_video_file;
           }
-        } catch(e) {}
+        } catch (e) { }
         try {
           if (typeof proj.proj_video_link === 'string' && proj.proj_video_link.trim().startsWith('[')) {
             vLinks = JSON.parse(proj.proj_video_link);
@@ -3504,7 +3521,7 @@ this.googleMapUrl =
           } else if (Array.isArray(proj.proj_video_link)) {
             vLinks = proj.proj_video_link;
           }
-        } catch(e) {}
+        } catch (e) { }
         try {
           if (typeof proj.proj_video_thumbnail === 'string' && proj.proj_video_thumbnail.trim().startsWith('[')) {
             vThumbs = JSON.parse(proj.proj_video_thumbnail);
@@ -3513,7 +3530,7 @@ this.googleMapUrl =
           } else if (Array.isArray(proj.proj_video_thumbnail)) {
             vThumbs = proj.proj_video_thumbnail;
           }
-        } catch(e) {}
+        } catch (e) { }
         try {
           if (typeof proj.video_source === 'string' && proj.video_source.trim().startsWith('[')) {
             vSources = JSON.parse(proj.video_source);
@@ -3522,7 +3539,7 @@ this.googleMapUrl =
           } else if (Array.isArray(proj.video_source)) {
             vSources = proj.video_source;
           }
-        } catch(e) {}
+        } catch (e) { }
 
         const maxLen = Math.max(vFiles.length, vLinks.length);
         if (maxLen > 0) {
@@ -3551,7 +3568,7 @@ this.googleMapUrl =
           try {
             const parsed = JSON.parse(proj.floor_plans);
             if (Array.isArray(parsed)) floorPlansArray = parsed;
-          } catch (e) {}
+          } catch (e) { }
         }
 
         const bhk = Array.from(new Set(floorPlansArray.map((fp: any) => fp.bhk_type).filter(Boolean)));
@@ -3594,7 +3611,7 @@ this.googleMapUrl =
               }
               const firstUrlPart = proj.firstUrlPart || proj.projectfirstUrlPart || video.firstUrlPart || (projName ? String(projName).toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'project');
               const secondUrlPart = proj.secondUrlPart || proj.projectsecondUrlPart || video.secondUrlPart || (proj.id ? `prjid-${proj.id}` : '');
-               const bhkTypes = Array.from(new Set(
+              const bhkTypes = Array.from(new Set(
                 (this.floorPlanList || []).map(fp => fp.bhk_type).filter(Boolean)
               ));
               this.seenReelKeys.add(reelKey);
@@ -3957,6 +3974,166 @@ this.googleMapUrl =
     }
 
     window.location.href = item.project_url
+  }
+
+  /** Enrich aboutDeveloperProjects: images, BHK label, city */
+  mapDeveloperProjects(list: any[]): any[] {
+    if (!Array.isArray(list)) return [];
+    const cityName = this.resolveProjectCityName();
+    const currentBhk = this.getCurrentProjectBhkLabel();
+    const currentType = this.getCurrentProjectTypeLabel();
+
+    return list.map((p: any) => {
+      const images = this.normalizeDeveloperImages(p);
+      const isCurrent = !!p.isCurrentProject || p.id === this.singleproject?.id;
+      let bhkLabel = p.bhkLabel || p.bhk || p.bhk_type || '';
+      if (isCurrent) {
+        bhkLabel = this.buildDeveloperTypeLabel(bhkLabel || currentBhk, currentType);
+      } else if (!bhkLabel && p.project_type) {
+        const pt = Array.isArray(p.project_type) ? p.project_type.join(', ') : String(p.project_type);
+        bhkLabel = pt;
+      }
+      return {
+        ...p,
+        images,
+        bhkLabel,
+        cityName: p.cityName || p.city || cityName || '',
+      };
+    });
+  }
+
+  normalizeDeveloperImages(item: any): string[] {
+    if (!item) return [];
+    // API field: project_images
+    if (Array.isArray(item.project_images) && item.project_images.length > 0) {
+      return item.project_images.filter((img: any) => !!img);
+    }
+    if (Array.isArray(item.images) && item.images.length > 0) {
+      return item.images.filter((img: any) => !!img);
+    }
+    if (item.image) return [item.image];
+    if (item.project_banner_image) return [item.project_banner_image];
+    return [];
+  }
+
+  getDeveloperImages(item: any): string[] {
+    if (Array.isArray(item?.images) && item.images.length > 0) return item.images;
+    return this.normalizeDeveloperImages(item);
+  }
+
+  getDeveloperLocation(item: any): string {
+    const locality = (item?.developer_address || item?.project_localities || '').toString().trim();
+    const city = (item?.cityName || item?.city || this.resolveProjectCityName() || '').toString().trim();
+    if (locality && city && locality.toLowerCase() !== city.toLowerCase()) {
+      return `${locality}, ${city}`;
+    }
+    return locality || city || '';
+  }
+
+  resolveProjectCityName(): string {
+    const cityId = this.singleproject?.project_city;
+    if (cityId !== undefined && cityId !== null && this.city1?.length) {
+      const matched = this.city1.find((c: any) => String(c.cid) === String(cityId));
+      if (matched?.cname) return matched.cname;
+    }
+    // Fallbacks from known fields
+    const op = this.singleproject?.aboutdeveloper?.Operatingin;
+    if (op) return String(op);
+    const addr = String(this.singleproject?.project_address || '');
+    // try extract city-like token before pincode
+    if (addr.toLowerCase().includes('ahmedabad')) return 'Ahmedabad';
+    return '';
+  }
+
+  /**
+   * Format BHK like "3, 4 BHK" from floor_plans.
+   * Commercial types come from project_type (Office, Shop, etc.).
+   */
+  getCurrentProjectBhkLabel(): string {
+    const plans = this.singleproject?.floor_plans || this.floorPlanList || [];
+    const nums: string[] = [];
+    let hasBhkWord = false;
+    (Array.isArray(plans) ? plans : []).forEach((fp: any) => {
+      const raw = (fp?.bhk_type || fp?.bhk || '').toString().trim();
+      if (!raw) return;
+      if (/bhk/i.test(raw)) hasBhkWord = true;
+      const m = raw.match(/(\d+\+?)/);
+      if (m && !nums.includes(m[1])) nums.push(m[1]);
+      else if (!m && !nums.includes(raw)) nums.push(raw);
+    });
+    if (!nums.length) return '';
+    if (hasBhkWord || nums.every(n => /^\d+\+?$/.test(n))) {
+      return nums.length === 1 ? `${nums[0]} BHK` : `${nums.join(', ')} BHK`;
+    }
+    return nums.join(', ');
+  }
+
+  getCurrentProjectTypeLabel(): string {
+    const t = this.singleproject?.project_type;
+    if (Array.isArray(t) && t.length) return t.join(', ');
+    if (typeof t === 'string' && t) return t;
+    return '';
+  }
+
+  /** Build display label: "3, 4 BHK Villa" or "Office, Shop, Showroom" */
+  buildDeveloperTypeLabel(bhkPart: string, typePart: string): string {
+    const bhk = (bhkPart || '').trim();
+    const typ = (typePart || '').trim();
+    if (bhk && typ) {
+      // avoid "4 BHK Flat Flat"
+      if (bhk.toLowerCase().includes(typ.toLowerCase())) return bhk;
+      return `${bhk} ${typ}`;
+    }
+    return bhk || typ || '';
+  }
+
+  getDeveloperCardImageIndex(cardIndex: number): number {
+    return this.developerCardImageIndex[cardIndex] || 0;
+  }
+
+  setDeveloperCardImage(cardIndex: number, imageIndex: number, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    this.developerCardImageIndex[cardIndex] = imageIndex;
+  }
+
+  /** Auto-advance images on all developer cards that have multiple images */
+  startDeveloperCardAutoplay(): void {
+    this.stopDeveloperCardAutoplay();
+    this.developerCardAutoplayTimer = setInterval(() => {
+      if (!this.developerProjects || !this.developerProjects.length) return;
+      this.developerProjects.forEach((item: any, i: number) => {
+        const imgs = this.getDeveloperImages(item);
+        if (imgs.length > 1) {
+          const cur = this.getDeveloperCardImageIndex(i);
+          this.developerCardImageIndex[i] = (cur + 1) % imgs.length;
+        }
+      });
+    }, 3000);
+  }
+
+  stopDeveloperCardAutoplay(): void {
+    if (this.developerCardAutoplayTimer) {
+      clearInterval(this.developerCardAutoplayTimer);
+      this.developerCardAutoplayTimer = null;
+    }
+  }
+
+  shareDeveloperProject(item: any, event: Event): void {
+    event.stopPropagation();
+    event.preventDefault();
+    let shareUrl = item?.project_url
+      ? (String(item.project_url).startsWith('http') ? item.project_url : `${window.location.origin}${String(item.project_url).startsWith('/') ? '' : '/'}${item.project_url}`)
+      : window.location.href;
+
+    this.reelDynamicUrl = shareUrl;
+    const modalEl = document.getElementById('shareReelModal');
+    if (modalEl) {
+      const modal = new bootstrap.Modal(modalEl);
+      modal.show();
+    }
   }
 
   @HostListener('window:resize')

@@ -482,7 +482,7 @@ select[id="ownerISD"]:focus-visible {
   line-height: 28px;
   border: 2px solid #e53726;
   text-decoration: none;
-  padding: 10px 24px;
+  padding: 5px 12px;
   border-radius: 5px;
   background: transparent;
   color: var(--black);
@@ -827,7 +827,7 @@ ul.footer-links {
 
 .footer-links li {
   margin-bottom: 10px;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .all-items {
@@ -1029,12 +1029,11 @@ ul.footer-links {
   /* display: none; */
 }
 
-.mb-search-residential {
-  display: inline-block;
-}
-
+.mb-search-residential,
+.mb-search-commercial,
 .mb-search-other {
   display: inline-block;
+  width: 100%;
 }
 
 .mb-search__property__title label {
@@ -1092,9 +1091,11 @@ ul.footer-links {
   font-weight: 600;
 }
 
+.data-overflow,
 .mb-search__property .data-overflow,
 .buy-image {
   overflow: hidden;
+  clear: both;
 }
 
 .mb-search__property__item {
@@ -1271,7 +1272,7 @@ ul.footer-links {
   font-size: 24px;
   line-height: 28px;
   font-weight: normal;
-  margin: 60px 0 30px;
+  margin: 21px 0 0px;
   font-weight: 600;
 }
 
@@ -2388,14 +2389,14 @@ ul.enq-bullet {
 }
 
 .all-projects a {
-  padding: 14px 20px;
-  background-color: var(--red-E63525);
-  color: var(--white);
-  font-size: 16px;
-  line-height: 28px;
-  font-weight: 600;
-  border-radius: 5px;
-  text-decoration: none;
+    padding: 10px 15px;
+    background-color: var(--red-E63525);
+    color: var(--white);
+    font-size: 15px;
+    line-height: 27px;
+    font-weight: 600;
+    border-radius: 5px;
+    text-decoration: none;
 }
 
 .all-projects a:hover {
@@ -2409,15 +2410,15 @@ ul.enq-bullet {
 }
 
 .explor-builders a {
-  padding: 14px 20px;
-  background-color: transparent;
-  color: var(--grey-333333);
-  border: 2px solid var(--border);
-  font-size: 16px;
-  line-height: 28px;
-  font-weight: 600;
-  border-radius: 5px;
-  text-decoration: none;
+    padding: 9px 17px;
+    background-color: transparent;
+    color: var(--grey-333333);
+    border: 2px solid var(--border);
+    font-size: 15px;
+    line-height: 26px;
+    font-weight: 600;
+    border-radius: 5px;
+    text-decoration: none;
 }
 
 /* hover effects  */
@@ -8023,4 +8024,27 @@ body.gallery-open .modal-backdrop {
 
 .uppercase{
   text-transform: uppercase;
+}
+
+.back_to_website_link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #555555;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin-bottom: 12px;
+  transition: color 0.2s ease;
+  font-family: "Sora", sans-serif;
+}
+
+.back_to_website_link span:hover {
+  color: #e53726;
+  text-decoration: underline;
+  background: transparent;
+  cursor: pointer;
 }

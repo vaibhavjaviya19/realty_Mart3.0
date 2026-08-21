@@ -276,7 +276,8 @@ export class ProjectFeaturedComponent implements OnInit {
     dots: false,
     arrows: true,
     infinite: true,
-    // autoplay: true,
+    autoplay: true,
+    autoplaySpeed: 3000,
     prevArrow:
       "<img class='a-left control-c prev slick-prev' src='../assets/images/prev.svg'>",
     nextArrow:

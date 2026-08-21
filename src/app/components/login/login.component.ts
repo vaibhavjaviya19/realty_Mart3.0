@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { PropertyservicesService } from '../../components/service/propertyservices.service';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Location } from '@angular/common';
@@ -28,7 +28,7 @@ interface ApiResponse {
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
   standalone: true,
-  imports: [NgIf, FormsModule, CommonModule, CountryCodeInputComponent],
+  imports: [NgIf, FormsModule, CommonModule, CountryCodeInputComponent, RouterLink],
 })
 export class LoginComponent implements OnInit {
   private apiUrl: string = environment.apiUrl;
@@ -63,7 +63,7 @@ export class LoginComponent implements OnInit {
     private toastr: ToastrService,
     private geolocationService: GeolocationService,
     private headerService: HeaderService,
-    private seoService:SeoService
+    private seoService: SeoService
   ) {
     this.setMetaTags('User Login in RealtyMart', '');
     this.getLocation();
@@ -97,9 +97,9 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-      this.seoService.setCanonicalURL(
-    'https://www.realtymart.com/login'
-  );
+    this.seoService.setCanonicalURL(
+      'https://www.realtymart.com/login'
+    );
     const token = localStorage.getItem('myrealtylogintoken');
     if (token) {
       this.route.navigate(['/']);
@@ -141,10 +141,10 @@ export class LoginComponent implements OnInit {
             this.toastr.error('The mobile number you entered is not registered!');
           } else if (response?.code == 2) {
             this.toastr.error("Your Profile is under review. You can log in once it's approved.!");
-          }else if(response.status === false){
+          } else if (response.status === false) {
             this.toastr.error(response.message);
           }
-          else{
+          else {
             this.isMobileNumberDisabled = true;
             this.isOtpGenerated = true;
           }
@@ -189,8 +189,15 @@ export class LoginComponent implements OnInit {
           localStorage.setItem('name', response.data.name);
           localStorage.setItem('email', response.data.email);
           this.headerService.triggerRefresh();
-          this.route.navigate(['/']);
           this.toastr.success('Login successfully!');
+
+          const redirectUrl = localStorage.getItem('redirectAfterAuth');
+          if (redirectUrl) {
+            localStorage.removeItem('redirectAfterAuth');
+            this.route.navigate([redirectUrl]);
+          } else {
+            this.route.navigate(['/']);
+          }
         } else if (response && response.code == 1) {
           this.toastr.error('Invalid OTP');
         }
@@ -252,91 +259,91 @@ export class LoginComponent implements OnInit {
   }
   setLoginSchema() {
 
-  const schema = {
+    const schema = {
 
-    "@context": "https://schema.org",
+      "@context": "https://schema.org",
 
-    "@graph": [
+      "@graph": [
 
-      {
+        {
 
-        "@type": "WebPage",
+          "@type": "WebPage",
 
-        "@id": "https://www.realtymart.com/login",
+          "@id": "https://www.realtymart.com/login",
 
-        "url": "https://www.realtymart.com/login",
+          "url": "https://www.realtymart.com/login",
 
-        "name": "Login | RealtyMart",
+          "name": "Login | RealtyMart",
 
-        "description": "Login to your RealtyMart account securely using your mobile number and OTP to access your property listings, saved properties and account dashboard.",
+          "description": "Login to your RealtyMart account securely using your mobile number and OTP to access your property listings, saved properties and account dashboard.",
 
-        "isPartOf": {
+          "isPartOf": {
 
-          "@type": "WebSite",
+            "@type": "WebSite",
 
-          "name": "RealtyMart",
+            "name": "RealtyMart",
 
-          "url": "https://www.realtymart.com"
-
-        },
-
-        "publisher": {
-
-          "@type": "Organization",
-
-          "name": "Intelliworkz Business Solutions Pvt. Ltd.",
-
-          "brand": {
-
-            "@type": "Brand",
-
-            "name": "RealtyMart"
+            "url": "https://www.realtymart.com"
 
           },
 
-          "url": "https://www.realtymart.com"
+          "publisher": {
+
+            "@type": "Organization",
+
+            "name": "Intelliworkz Business Solutions Pvt. Ltd.",
+
+            "brand": {
+
+              "@type": "Brand",
+
+              "name": "RealtyMart"
+
+            },
+
+            "url": "https://www.realtymart.com"
+
+          },
+
+          "mainEntity": {
+
+            "@id": "https://www.realtymart.com/login#app"
+
+          }
 
         },
 
-        "mainEntity": {
+        {
 
-          "@id": "https://www.realtymart.com/login#app"
+          "@type": "WebApplication",
 
-        }
+          "@id": "https://www.realtymart.com/login#app",
 
-      },
+          "name": "RealtyMart Login",
 
-      {
+          "applicationCategory": "BusinessApplication",
 
-        "@type": "WebApplication",
+          "operatingSystem": "Web",
 
-        "@id": "https://www.realtymart.com/login#app",
+          "url": "https://www.realtymart.com/login",
 
-        "name": "RealtyMart Login",
+          "description": "Secure OTP-based login for RealtyMart users.",
 
-        "applicationCategory": "BusinessApplication",
+          "provider": {
 
-        "operatingSystem": "Web",
+            "@type": "Organization",
 
-        "url": "https://www.realtymart.com/login",
+            "name": "Intelliworkz Business Solutions Pvt. Ltd."
 
-        "description": "Secure OTP-based login for RealtyMart users.",
-
-        "provider": {
-
-          "@type": "Organization",
-
-          "name": "Intelliworkz Business Solutions Pvt. Ltd."
+          }
 
         }
 
-      }
+      ]
 
-    ]
+    };
 
-  };
+    this.seoService.setSchema(schema);
 
-  this.seoService.setSchema(schema);
-
-}
+  }
 }

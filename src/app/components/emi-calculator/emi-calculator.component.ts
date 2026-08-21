@@ -1,14 +1,27 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Options, LabelType } from 'ngx-slider-v2';
 import { Title, Meta } from '@angular/platform-browser';
-import { SeoService } from 'src/app/seo.service';
 
 @Component({
   selector: 'app-emi-calculator',
   templateUrl: './emi-calculator.component.html',
   styleUrls: ['./emi-calculator.component.css']
 })
-export class EmiCalculatorComponent implements OnInit {
+export class EmiCalculatorComponent implements OnChanges {
+
+  // Optional: pass the project's max price (in rupees, e.g. from
+  // singleproject.project_maximum_price) so the loan-amount slider
+  // starts positioned at that value instead of the default 25L.
+  @Input() initialAmount: number | string | null = null;
+
+  // Optional: when true, only the interactive calculator (loan amount /
+  // interest / tenure + result) is shown — the banner and the long
+  // "How to use" article below it are hidden. Used when this component
+  // is dropped into a modal (e.g. from the project-approve-detail page)
+  // so it doesn't bring the whole EMI landing page along with it. The
+  // standalone /emi-calculator route never sets this, so that page is
+  // untouched.
+  @Input() compact: boolean = false;
 
   filters: any;
 
@@ -77,7 +90,6 @@ export class EmiCalculatorComponent implements OnInit {
   constructor(
     private titleService: Title,
     private metaService: Meta,
-    private seoService:SeoService
   ) {
     this.yrToggel = true;
     this.setMetaTags(
@@ -85,102 +97,6 @@ export class EmiCalculatorComponent implements OnInit {
       '',
     );
   }
-
-  ngOnInit(): void {
-    this.setHomeLoanSchema();
-     this.seoService.setCanonicalURL(
-    window.location.href
-  );
-  }
-
-
-  setHomeLoanSchema() {
-
-  const schema = {
-
-    "@context": "https://schema.org",
-
-    "@graph": [
-
-      {
-        "@type": "WebPage",
-
-        "@id": window.location.href,
-
-        "name": "Home Loan EMI Calculator | RealtyMart",
-
-        "url": window.location.href,
-
-        "description": "Calculate your Home Loan EMI instantly using RealtyMart's free Home Loan EMI Calculator.",
-
-        "mainEntity": {
-          "@id": window.location.href + "#calculator"
-        }
-
-      },
-
-      {
-
-        "@type": "WebApplication",
-
-        "@id": window.location.href + "#calculator",
-
-        "name": "Home Loan EMI Calculator",
-
-        "applicationCategory": "FinanceApplication",
-
-        "operatingSystem": "Web",
-
-        "url": window.location.href,
-
-        "description": "A free online calculator to estimate monthly home loan EMI, total interest payable and total repayment amount.",
-         "offers": {
-    "@type": "Offer",
-    "price": "-",
-    "priceCurrency": "-",
-    "availability": "-"
-  },
-
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "-",
-    "reviewCount": "-"
-  }
-      },
-
-      {
-
-        "@type": "FinancialProduct",
-
-        "name": "Home Loan",
-
-        "category": "Home Loan",
-
-        "provider": {
-
-          "@type": "Organization",
-
-          "name": "Intelliworkz Business Solutions Pvt. Ltd.",
-
-          "brand": {
-
-            "@type": "Brand",
-
-            "name": "RealtyMart"
-
-          }
-
-        }
-
-      }
-
-    ]
-
-  };
-
-  this.seoService.setSchema(schema);
-
-}
 
   // meta title
   setMetaTags(title: string, description: string) {
@@ -201,8 +117,62 @@ export class EmiCalculatorComponent implements OnInit {
     // this.metaService.updateTag({ name: 'twitter:image', content: image });
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    // Runs whenever the parent (e.g. project-approve-detail) sets/updates
+    // initialAmount, so opening the calculator again for a different
+    // project moves the cursor to that project's max value too.
+    if (changes['initialAmount'] && this.initialAmount) {
+      this.applyInitialAmount();
+    }
+  }
+
   ngAfterViewInit() {
+    if (this.initialAmount) {
+      this.applyInitialAmount();
+    }
     this.update();
+  }
+
+  // Positions the loan-amount slider's cursor at the given price.
+  // singleproject.project_maximum_price comes pre-formatted from the API
+  // as a string like "6.61 Cr" or "45 L" (not a raw rupee number), so the
+  // unit suffix has to be parsed to convert it correctly into Lakhs
+  // (the unit pemi.value / the slider itself works in).
+  private applyInitialAmount() {
+    const raw = String(this.initialAmount).trim().toLowerCase();
+    const numMatch = raw.match(/[\d.]+/);
+    if (!numMatch) {
+      return;
+    }
+    const num = parseFloat(numMatch[0]);
+    if (isNaN(num) || num <= 0) {
+      return;
+    }
+
+    let amountInLakhs: number;
+    if (raw.includes('cr')) {
+      amountInLakhs = num * 100; // 1 Crore = 100 Lakhs
+    } else if (raw.includes('lac') || raw.includes('lakh') || raw.includes('l')) {
+      amountInLakhs = num; // already in Lakhs
+    } else if (raw.includes('k')) {
+      amountInLakhs = num / 100; // Thousands -> Lakhs
+    } else {
+      // No unit suffix: treat as a plain rupee amount.
+      amountInLakhs = num / 100000;
+    }
+
+    if (amountInLakhs > 0) {
+      // If the project's price is higher than the slider's current max
+      // (800L), push the ceiling up so the cursor can actually reach it.
+      if (this.poptions.ceil !== undefined && amountInLakhs > this.poptions.ceil) {
+        this.poptions = {
+          ...this.poptions,
+          ceil: Math.ceil(amountInLakhs / 100) * 100
+        };
+      }
+
+      this.pemi.value = amountInLakhs;
+    }
   }
 
   tbupdate(id: number) {

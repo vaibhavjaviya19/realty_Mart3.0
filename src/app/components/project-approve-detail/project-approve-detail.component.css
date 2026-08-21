@@ -180,7 +180,7 @@
 }
 
 .action-btn {
-  height: 38px;
+  height: 40px;
   min-width: 130px;
 
   display: inline-flex;
@@ -203,24 +203,101 @@
 
 /* WhatsApp */
 .whatsapp-btn {
-  background: #eaf6ea;
-  border: 1px solid #66bb6a;
-  color: #4caf50;
+  background: #d8f3dc;
+  border: 1.5px solid #40c351;
+  color: #1b5e20;
+  font-weight: 700;
+  font-size: 13px;
+  border-radius: 6px;
+  padding: 8px 16px;
 }
 
 .whatsapp-btn:hover {
-  background: #dff0df;
+  background: #c5edd9;
+  color: #1b5e20;
 }
 
-/* View Contact */
+/* View Contact / Call */
 .contact-btn {
-  background: #ef3f23;
-  border: 1px solid #ef3f23;
-  color: #fff;
+  background: #e83827;
+  border: 1.5px solid #e83827;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 13px;
+  border-radius: 6px;
+  padding: 8px 16px;
 }
 
 .contact-btn:hover {
-  background: #dd3217;
+  background: #d32f1e;
+  border-color: #d32f1e;
+}
+
+/* EMI Calculator */
+.emi-btn {
+  background: #ffffff;
+  border: 1.5px solid #555555;
+  color: #333333;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.emi-btn:hover {
+  background: #333333;
+  color: #ffffff;
+  border-color: #333333;
+}
+
+/* EMI Calculator modal — sized to its content (like a normal dialog),
+   with a small margin on every side, vertically centered via
+   .modal-dialog-centered. No forced height/scrollbar — it's only as
+   tall as the calculator needs to be. */
+#EmiCalculatorModal .emi-modal-dialog {
+  width: calc(100vw - 40px);
+  max-width: 1140px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#EmiCalculatorModal .emi-modal-dialog .modal-content {
+  border-radius: 12px;
+}
+
+@media (max-width: 767px) {
+  #EmiCalculatorModal .emi-modal-dialog {
+    width: calc(100vw - 16px);
+  }
+}
+
+.emi-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid #eee;
+  flex-shrink: 0;
+}
+
+.emi-modal-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.emi-modal-body {
+  background: #f8f8f8;
+  padding: 0px 20px;
+}
+
+.emi-modal-inner {
+  max-width: 960px;
+  margin: 0 auto;
 }
 
 .info-card {
@@ -513,6 +590,13 @@
 
   .project-sticky-header .download-btn {
     display: none !important;
+  }
+
+  .project-sticky-header .action-btn.emi-btn {
+    flex: 0 0 44px !important;
+    width: 44px !important;
+    min-width: 44px !important;
+    padding: 0 !important;
   }
 }
 
@@ -1495,74 +1579,229 @@ google-map {
   display: none;
 }
 
-/* Card */
+/* Card — listing style like reference image (theme colors kept) */
 
-.developer-card {
-  flex: 0 0 310px;
+.developer-slider-wrapper {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
 }
 
-.developer-card .card {
-  border: 1px solid #ececec;
-  border-radius: 4px;
+.developer-slider {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+
+.developer-slider::-webkit-scrollbar {
+  display: none;
+}
+
+.developer-card {
+  flex: 0 0 min(300px, 85%);
+  max-width: 320px;
+  scroll-snap-align: start;
+  transition: all 0.3s ease;
+}
+
+.developer-card .card,
+.developer-card .developer-listing-card {
+  border: 1px solid #e8e8e8;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: none;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  background: #fff;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.developer-card .developer-listing-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
 }
 
 .card-img-wrapper {
-  height: 170px;
+  position: relative;
+  height: 200px;
   overflow: hidden;
+  background: #f5f5f5;
+  flex-shrink: 0;
 }
 
-.card-img-wrapper img {
+.card-img-wrapper img,
+.developer-card-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
-.card-body {
-  padding: 12px;
+.developer-card-dots {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 2;
+  max-width: calc(100% - 24px);
+  overflow: hidden;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+
+.developer-dot {
+  width: 8px;
+  height: 8px;
+  min-width: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  display: inline-block;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.developer-dot.active {
+  background: #ef3f23;
+  transform: scale(1.15);
+}
+
+.card-body,
+.developer-card-body {
+  padding: 14px 16px 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.developer-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
 }
 
 .project-name {
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 700;
-  color: #222;
-  margin-bottom: 5px;
+  color: #1d1d1d;
+  margin-bottom: 0;
+  line-height: 1.35;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
-.builder-name {
-  font-size: 16px;
-  font-weight: normal;
-  color: #888;
-}
-
-.location i {
+.developer-share-btn {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
   color: #ef3f23;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
-.project-info {
-  font-size: 16px;
-  color: #777;
+.developer-share-btn:hover {
+  background: rgba(239, 63, 35, 0.08);
+  color: #db3217;
 }
 
-.price-bar {
-  background: #000;
-  color: #fff;
-  padding: 10px 12px;
-  font-size: 16px;
-  font-weight: 600;
+.developer-share-btn i {
+  font-size: 15px;
 }
 
-/* Tablet */
+.location-developer {
+  font-size: 13px;
+  color: #888;
+  line-height: 1.4;
+  margin-bottom: 10px !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-@media (max-width: 991px) {
+.location-developer img {
+  width: 14px;
+  height: auto;
+  vertical-align: middle;
+}
 
+/* Type left · Price right — responsive */
+.developer-meta-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.developer-type {
+  font-size: 13px;
+  font-weight: 500;
+  color: #555;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.35;
+}
+
+.developer-price {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1d1d1d;
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+/* Desktop: show ~2 cards with next peek when multiple */
+@media (min-width: 992px) {
   .developer-card {
-    flex: 0 0 280px;
+    flex: 0 0 300px;
+    max-width: 300px;
   }
 
   .card-img-wrapper {
-    height: 160px;
+    height: 200px;
+  }
+}
+
+/* Tablet */
+@media (max-width: 991px) {
+  .developer-card {
+    flex: 0 0 min(280px, 70%);
+    max-width: 300px;
+  }
+
+  .card-img-wrapper {
+    height: 180px;
   }
 
   .project-sticky-header {
@@ -1570,20 +1809,47 @@ google-map {
   }
 }
 
-/* Mobile */
-
+/* Mobile — peek next card so user knows there are more */
 @media (max-width: 767px) {
+  .developer-slider {
+    gap: 12px;
+    padding-right: 24px;
+  }
 
   .developer-card {
-    flex: 0 0 240px;
+    flex: 0 0 min(260px, 78vw);
+    max-width: 280px;
   }
 
   .project-name {
-    font-size: 16px;
+    font-size: 15px;
   }
 
   .card-img-wrapper {
-    height: 140px;
+    height: 160px;
+  }
+
+  .developer-card-body {
+    padding: 12px 14px 14px;
+  }
+
+  .developer-type {
+    font-size: 12px;
+  }
+
+  .developer-price {
+    font-size: 13px;
+  }
+
+  .developer-meta-row {
+    gap: 8px;
+  }
+}
+
+@media (max-width: 400px) {
+  .developer-card {
+    flex: 0 0 85vw;
+    max-width: none;
   }
 }
 
@@ -3779,6 +4045,11 @@ google-map {
   z-index: 10001 !important;
 }
 
+.modal-backdrop.show {
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
 #get-builder {
   z-index: 10002 !important;
 }
@@ -3924,8 +4195,7 @@ google-map {
 }
 
 .developer-card {
-  flex: 0 0 260px;
-  /* card width */
+  /* width controlled above for responsive multi-card slider */
   transition: all 0.3s ease;
 }
 
@@ -4720,7 +4990,7 @@ google-map {
 
 @media (max-width:575px) {
  .banner-image{
-  height: 457px !important;
+  height: 300px !important;
  }
 }
 

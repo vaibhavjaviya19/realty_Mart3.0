@@ -1,4 +1,4 @@
-import { Component, OnInit, Injectable, HostListener } from '@angular/core';
+import { Component, OnInit, Injectable, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { PostpropertyfreeService } from '../service/postpropertyfree.service';
 import { FormsModule, NgForm } from '@angular/forms';
@@ -8,6 +8,9 @@ import { Router } from '@angular/router';
 import { FormControl, FormGroup, Validators, FormBuilder, FormArray } from '@angular/forms';
 import { Title, Meta } from '@angular/platform-browser';
 import { SeoService } from 'src/app/seo.service';
+
+declare var $: any;
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-post-property-free',
@@ -116,23 +119,23 @@ export class PostPropertyFreeComponent {
   });
 
   floorOptions: number[] = Array.from({ length: 200 }, (_, i) => i + 1);
-  selectedPropertyFor:any;
-  selectedPossessionStatus:any;
-  selectedAgeOfConstruction:any;
-  selectedCurrentBusinessSector:any;
-  selectedTransactionType:any;
-  selectedAssuredReturns:any;
-  selectedAvailabaleDate:any;
-  isLeased:any;
-  totalcompletePrice:any;
+  selectedPropertyFor: any;
+  selectedPossessionStatus: any;
+  selectedAgeOfConstruction: any;
+  selectedCurrentBusinessSector: any;
+  selectedTransactionType: any;
+  selectedAssuredReturns: any;
+  selectedAvailabaleDate: any;
+  isLeased: any;
+  totalcompletePrice: any;
   availableYears: number[] = [];
   businessYears: number[] = [];
-  userRoleGet : any;
+  userRoleGet: any;
   propertyType: any;
   landZone: any;
   BusinessSector: any;
   localities: any;
-  projectList:any;
+  projectList: any;
   cities: any;
   numberOfBed: any;
   selectedBedRoom: any;
@@ -147,7 +150,7 @@ export class PostPropertyFreeComponent {
   selectedFurnishType: string = '';
   selectedTotalFloorOption: any;
   selectedFlatSociety: any = '';
-  selectedPropertyType:any;
+  selectedPropertyType: any;
   isDropdownOpen = false;
   isbalconiDropdownOpen = false;
   isbathRoomDropdownOpen = false;
@@ -203,28 +206,34 @@ export class PostPropertyFreeComponent {
     public http: HttpClient,
     private toastr: ToastrService,
     private route: Router,
-    private seoService:SeoService
+    private seoService: SeoService
   ) {
     this.setMetaTags(
       'Sell and Rent Your Property For Free on RealtyMart',
       '',
     );
-    const propertyDataJson = localStorage.getItem('postPropertyData');
-    const propertyData = propertyDataJson ? JSON.parse(propertyDataJson) : null;
-
-    if (propertyData) {
-      this.submitForm.patchValue({
-        property_for: propertyData.property_for || '',
-      });
-      this.onPropertyFor(propertyData.property_for);
-    }
-    const tokens = localStorage.getItem('myrealtylogintoken');
-    if(tokens === null){
-      this.route.navigate(['/login']);
-      this.toastr.error('Please Login!');
+    const draftDataJson = localStorage.getItem('postPropertyFormDraft');
+    if (draftDataJson) {
+      this.restoreDraftData();
     } else {
+      const propertyDataJson = localStorage.getItem('postPropertyData');
+      const propertyData = propertyDataJson ? JSON.parse(propertyDataJson) : null;
+      if (propertyData) {
+        this.submitForm.patchValue({
+          property_for: propertyData.property_for || '',
+        });
+        this.onPropertyFor(propertyData.property_for);
+      }
+    }
+
+    const tokens = localStorage.getItem('myrealtylogintoken');
+    if (tokens !== null) {
       this.userRoleGet = localStorage.getItem('role');
     }
+  }
+
+  get isUserLoggedIn(): boolean {
+    return !!localStorage.getItem('myrealtylogintoken');
   }
 
   // meta title
@@ -281,7 +290,7 @@ export class PostPropertyFreeComponent {
     this.showSections = true;
   }
 
-  onChange(event: any){
+  onChange(event: any) {
     this.selectedPropertyType = this.submitForm.value?.property_type;
 
     if (this.selectedPropertyType == 1) {
@@ -373,7 +382,7 @@ export class PostPropertyFreeComponent {
       this.submitForm.get('possession_status')?.setValidators([Validators.required]);
       this.submitForm.get('possession_status')?.updateValueAndValidity();
 
-    } else if(this.selectedPropertyType == 3){
+    } else if (this.selectedPropertyType == 3) {
       // lift
       this.submitForm.get('lift')?.setValidators([Validators.required]);
       this.submitForm.get('lift')?.updateValueAndValidity();
@@ -450,7 +459,7 @@ export class PostPropertyFreeComponent {
       this.submitForm.get('possession_status')?.setValidators([Validators.required]);
       this.submitForm.get('possession_status')?.updateValueAndValidity();
 
-    } else if(this.selectedPropertyType == 4){
+    } else if (this.selectedPropertyType == 4) {
       // land_zone
       this.submitForm.get('land_zone')?.setValidators([Validators.required]);
       this.submitForm.get('land_zone')?.updateValueAndValidity();
@@ -527,7 +536,7 @@ export class PostPropertyFreeComponent {
       this.submitForm.get('possession_status')?.setValidators([Validators.required]);
       this.submitForm.get('possession_status')?.updateValueAndValidity();
 
-    } else if(this.selectedPropertyType == 5){
+    } else if (this.selectedPropertyType == 5) {
       // land_zone
       this.submitForm.get('land_zone')?.setValidators([Validators.required]);
       this.submitForm.get('land_zone')?.updateValueAndValidity();
@@ -568,7 +577,7 @@ export class PostPropertyFreeComponent {
       this.submitForm.get('plot_width')?.setValidators([Validators.required]);
       this.submitForm.get('plot_width')?.updateValueAndValidity();
 
-    } else if(this.selectedPropertyType == 8){
+    } else if (this.selectedPropertyType == 8) {
       // land_zone
       this.submitForm.get('land_zone')?.setValidators([Validators.required]);
       this.submitForm.get('land_zone')?.updateValueAndValidity();
@@ -653,7 +662,7 @@ export class PostPropertyFreeComponent {
       this.submitForm.get('possession_status')?.setValidators([Validators.required]);
       this.submitForm.get('possession_status')?.updateValueAndValidity();
 
-    } else if(this.selectedPropertyType == 9){
+    } else if (this.selectedPropertyType == 9) {
       // land_zone
       this.submitForm.get('land_zone')?.setValidators([Validators.required]);
       this.submitForm.get('land_zone')?.updateValueAndValidity();
@@ -694,7 +703,7 @@ export class PostPropertyFreeComponent {
       this.submitForm.get('plot_width')?.setValidators([Validators.required]);
       this.submitForm.get('plot_width')?.updateValueAndValidity();
 
-    } else if(this.selectedPropertyType == 10){
+    } else if (this.selectedPropertyType == 10) {
       // lift
       this.submitForm.get('lift')?.setValidators([Validators.required]);
       this.submitForm.get('lift')?.updateValueAndValidity();
@@ -787,7 +796,7 @@ export class PostPropertyFreeComponent {
       this.submitForm.get('possession_status')?.setValidators([Validators.required]);
       this.submitForm.get('possession_status')?.updateValueAndValidity();
 
-    } else if(this.selectedPropertyType == 11){
+    } else if (this.selectedPropertyType == 11) {
       // lift
       this.submitForm.get('lift')?.setValidators([Validators.required]);
       this.submitForm.get('lift')?.updateValueAndValidity();
@@ -852,7 +861,7 @@ export class PostPropertyFreeComponent {
       this.submitForm.get('possession_status')?.setValidators([Validators.required]);
       this.submitForm.get('possession_status')?.updateValueAndValidity();
 
-    } else if(this.selectedPropertyType == 12){
+    } else if (this.selectedPropertyType == 12) {
       // lift
       this.submitForm.get('lift')?.setValidators([Validators.required]);
       this.submitForm.get('lift')?.updateValueAndValidity();
@@ -945,7 +954,7 @@ export class PostPropertyFreeComponent {
       this.submitForm.get('possession_status')?.setValidators([Validators.required]);
       this.submitForm.get('possession_status')?.updateValueAndValidity();
 
-    } else if(this.selectedPropertyType == 16){
+    } else if (this.selectedPropertyType == 16) {
       // land_zone
       this.submitForm.get('land_zone')?.setValidators([Validators.required]);
       this.submitForm.get('land_zone')?.updateValueAndValidity();
@@ -1022,7 +1031,7 @@ export class PostPropertyFreeComponent {
       this.submitForm.get('possession_status')?.setValidators([Validators.required]);
       this.submitForm.get('possession_status')?.updateValueAndValidity();
 
-    } else if(this.selectedPropertyType == 17){
+    } else if (this.selectedPropertyType == 17) {
       // land_zone
       this.submitForm.get('land_zone')?.setValidators([Validators.required]);
       this.submitForm.get('land_zone')?.updateValueAndValidity();
@@ -1055,7 +1064,7 @@ export class PostPropertyFreeComponent {
       this.submitForm.get('plot_width')?.setValidators([Validators.required]);
       this.submitForm.get('plot_width')?.updateValueAndValidity();
 
-    } else if(this.selectedPropertyType == 18){
+    } else if (this.selectedPropertyType == 18) {
       // land_zone
       this.submitForm.get('land_zone')?.setValidators([Validators.required]);
       this.submitForm.get('land_zone')?.updateValueAndValidity();
@@ -1140,7 +1149,7 @@ export class PostPropertyFreeComponent {
       this.submitForm.get('possession_status')?.setValidators([Validators.required]);
       this.submitForm.get('possession_status')?.updateValueAndValidity();
 
-    } else if(this.selectedPropertyType == 19){
+    } else if (this.selectedPropertyType == 19) {
       // land_zone
       this.submitForm.get('land_zone')?.setValidators([Validators.required]);
       this.submitForm.get('land_zone')?.updateValueAndValidity();
@@ -1225,7 +1234,7 @@ export class PostPropertyFreeComponent {
       this.submitForm.get('possession_status')?.setValidators([Validators.required]);
       this.submitForm.get('possession_status')?.updateValueAndValidity();
 
-    } else if(this.selectedPropertyType == 20){
+    } else if (this.selectedPropertyType == 20) {
       // land_zone
       this.submitForm.get('land_zone')?.setValidators([Validators.required]);
       this.submitForm.get('land_zone')?.updateValueAndValidity();
@@ -1314,7 +1323,7 @@ export class PostPropertyFreeComponent {
       this.submitForm.get('possession_status')?.setValidators([Validators.required]);
       this.submitForm.get('possession_status')?.updateValueAndValidity();
 
-    } else if(this.selectedPropertyType == 21){
+    } else if (this.selectedPropertyType == 21) {
       // land_zone
       this.submitForm.get('land_zone')?.setValidators([Validators.required]);
       this.submitForm.get('land_zone')?.updateValueAndValidity();
@@ -1361,7 +1370,7 @@ export class PostPropertyFreeComponent {
   onPropertyFor(event: Event) {
     this.selectedPropertyFor = this.submitForm.value?.property_for;
 
-    if(this.selectedPropertyFor == 'Rent'){
+    if (this.selectedPropertyFor == 'Rent') {
       // rent_amount
       this.submitForm.get('rent_amount')?.setValidators([Validators.required]);
       this.submitForm.get('rent_amount')?.updateValueAndValidity();
@@ -1370,7 +1379,7 @@ export class PostPropertyFreeComponent {
       this.submitForm.get('security_amount')?.setValidators([Validators.required]);
       this.submitForm.get('security_amount')?.updateValueAndValidity();
 
-    } else if(this.selectedPropertyFor == 'Sell'){
+    } else if (this.selectedPropertyFor == 'Sell') {
       // total_price
       this.submitForm.get('total_price')?.setValidators([Validators.required]);
       this.submitForm.get('total_price')?.updateValueAndValidity();
@@ -1391,7 +1400,7 @@ export class PostPropertyFreeComponent {
     this.cleanupHiddenControlValidators();
   }
 
-  showpossessionstatus(){
+  showpossessionstatus() {
     this.selectedPossessionStatus = this.submitForm.value?.possession_status;
     console.log(this.selectedPossessionStatus);
 
@@ -1577,26 +1586,26 @@ export class PostPropertyFreeComponent {
     }
   }
 
-  ageofconstruction(){
+  ageofconstruction() {
     this.selectedAgeOfConstruction = this.submitForm.value?.age_of_construction;
   }
 
-  currentbusinesssector(){
+  currentbusinesssector() {
     this.selectedCurrentBusinessSector = this.submitForm.value?.current_business_sector;
   }
 
-  ontransactiontype(){
+  ontransactiontype() {
     this.selectedTransactionType = this.submitForm.value?.transaction_type;
   }
 
-  onAssuredReturns(){
+  onAssuredReturns() {
     this.selectedAssuredReturns = this.submitForm.value?.assured_returns;
   }
 
   ngOnInit() {
-  this.seoService.setCanonicalURL(
-    window.location.href
-  );
+    this.seoService.setCanonicalURL(
+      window.location.href
+    );
     this.fetchPropertyType();
     this.fetchLandZone();
     this.fetchBusinesssector();
@@ -1643,33 +1652,49 @@ export class PostPropertyFreeComponent {
     this.cleanupHiddenControlValidators();
   }
 
-  onLeased(){
+  onLeased() {
     this.isLeased = this.submitForm.value?.currently_leased_out;
   }
 
-  totalandcompletePrice(){
+  totalandcompletePrice() {
     this.totalcompletePrice = this.submitForm.value?.cmpltprice;
   }
 
-  toggleDropdown() {
-    this.isDropdownOpen = !this.isDropdownOpen;
+  toggleDropdown(event?: Event) {
+    if (event) event.stopPropagation();
+    const currentState = this.isDropdownOpen;
+    this.closeAllDropdowns();
+    this.isDropdownOpen = !currentState;
   }
-  balconiesDropdown() {
-    this.isbalconiDropdownOpen = !this.isbalconiDropdownOpen;
+  balconiesDropdown(event?: Event) {
+    if (event) event.stopPropagation();
+    const currentState = this.isbalconiDropdownOpen;
+    this.closeAllDropdowns();
+    this.isbalconiDropdownOpen = !currentState;
   }
-  floortoggleDropdown() {
-    this.isfloorDropdownOpen = !this.isfloorDropdownOpen;
+  floortoggleDropdown(event?: Event) {
+    if (event) event.stopPropagation();
+    const currentState = this.isfloorDropdownOpen;
+    this.closeAllDropdowns();
+    this.isfloorDropdownOpen = !currentState;
   }
-  floorNotoggleDropdown() {
-    this.isfloorNoDropdownOpen = !this.isfloorNoDropdownOpen;
+  floorNotoggleDropdown(event?: Event) {
+    if (event) event.stopPropagation();
+    const currentState = this.isfloorNoDropdownOpen;
+    this.closeAllDropdowns();
+    this.isfloorNoDropdownOpen = !currentState;
   }
-  bathRoomDropdown() {
-    this.isbathRoomDropdownOpen = !this.isbathRoomDropdownOpen;
+  bathRoomDropdown(event?: Event) {
+    if (event) event.stopPropagation();
+    const currentState = this.isbathRoomDropdownOpen;
+    this.closeAllDropdowns();
+    this.isbathRoomDropdownOpen = !currentState;
   }
+
   selectOption(option: string) {
     this.selectedValue = option;
     this.submitForm.patchValue({ bedroom: this.selectedValue });
-    this.isDropdownOpen = this.isDropdownOpen;
+    this.closeAllDropdowns();
     this.showSection = true;
     this.selectedOption = option;
     this.selectedBedRoom = null;
@@ -1686,6 +1711,7 @@ export class PostPropertyFreeComponent {
     this.selectedBathRoomOption = null;
     this.showBathRoomSection = true;
     this.selectBathRoomsValue = '3+';
+    this.closeAllDropdowns();
   }
 
   selectFloor(num: any, name: any) {
@@ -1694,6 +1720,7 @@ export class PostPropertyFreeComponent {
     this.showFloorSection = true;
     this.floorNoselectedValue = '5+';
     this.submitForm.patchValue({ floor_no: this.selectedFloor });
+    this.closeAllDropdowns();
   }
 
   selectFloorOption(floorNoOptions: any) {
@@ -1702,7 +1729,7 @@ export class PostPropertyFreeComponent {
     this.selectedFloorOption = floorNoOptions;
     this.selectedFloor = null;
     this.showFloorSection = true;
-    this.isfloorNoDropdownOpen = this.isfloorNoDropdownOpen;
+    this.closeAllDropdowns();
   }
 
   selectTotalFloorDropdownOption(foption: string) {
@@ -1710,8 +1737,7 @@ export class PostPropertyFreeComponent {
     this.submitForm.patchValue({ total_floor: this.totalFloorselectedValue });
     this.selectedTotalFloorOption = foption;
     this.selectedTotalFloor = null;
-    this.isfloorDropdownOpen = false;
-    this.isfloorDropdownOpen = !this.isfloorDropdownOpen;
+    this.closeAllDropdowns();
   }
   selectTotalFloor(num: number) {
     this.selectedTotalFloor = num;
@@ -1719,6 +1745,7 @@ export class PostPropertyFreeComponent {
     this.selectedTotalFloorOption = null;
     // this.totalFloorselectedValue = num.toString();
     this.totalFloorselectedValue = '15+';
+    this.closeAllDropdowns();
   }
   selectBathRoomOption(bathRoomoptions: string) {
     this.selectBathRoomsValue = bathRoomoptions;
@@ -1726,7 +1753,7 @@ export class PostPropertyFreeComponent {
     this.selectedBathRoomOption = bathRoomoptions;
     this.selectedBathRoom = null;
     this.showBathRoomSection = true;
-    this.isbathRoomDropdownOpen = this.isbathRoomDropdownOpen;
+    this.closeAllDropdowns();
   }
   selectBalconies(num: any, name: any) {
     this.selectedBalcony = num;
@@ -1734,6 +1761,7 @@ export class PostPropertyFreeComponent {
     this.selectedBalconiesOption = null;
     this.showBalconySection = true;
     this.selectedBalconiesValue = '3+';
+    this.closeAllDropdowns();
   }
   selectBedRoom(num: any, name: any) {
     this.numberOfBeds = num;
@@ -1747,13 +1775,14 @@ export class PostPropertyFreeComponent {
     this.selectPreValue = num.toString();
     this.showSection = true;
     this.selectedValue = '5+';
+    this.closeAllDropdowns();
   }
   selectBalconiesOption(baconiesoptions: string) {
     this.selectedBalconiesValue = baconiesoptions;
     this.submitForm.patchValue({ balconies: this.selectedBalconiesValue });
     this.selectedBalconiesOption = baconiesoptions;
     this.selectedBalcony = null;
-    this.isbalconiDropdownOpen = this.isbalconiDropdownOpen;
+    this.closeAllDropdowns();
   }
 
   fetchLandZone() {
@@ -1772,32 +1801,232 @@ export class PostPropertyFreeComponent {
     });
   }
   onCityChange(event: any) {
-    const selectedCity:any = event.target.value;
+    const selectedCity: any = event.target.value;
     this.fetchLocalities(selectedCity);
   }
-  fetchLocalities(city:any) {
+  fetchLocalities(city: any) {
     this.PostpropertyfreeService.getLocalities(city).subscribe((res: any) => {
       this.localities = res.responseData.data;
     });
   }
-  onLocalityChange(event:any) {
-    const selectedLocality:any = event.target.value;
+  onLocalityChange(event: any) {
+    const selectedLocality: any = event.target.value;
     this.fetchProjectList(selectedLocality);
   }
-  onPropertyChange(event:any) {
-    const selectedLocality:any = event.target.value;
-    
+  onPropertyChange(event: any) {
+    const selectedLocality: any = event.target.value;
+
   }
-  fetchProjectList(locality:any) {
-    this.PostpropertyfreeService.getProjectList(locality).subscribe((res:any)=> {
-      this.projectList =res.responseData.addproject;
+  fetchProjectList(locality: any) {
+    this.PostpropertyfreeService.getProjectList(locality).subscribe((res: any) => {
+      this.projectList = res.responseData.addproject;
     });
   }
 
-  propertyForm() {
-    const userId = localStorage.getItem('userId');
-    this.submitForm.patchValue({ user_id: userId });
+  dataURLtoFile(dataurl: string, filename: string): File {
+    const arr = dataurl.split(',');
+    const mimeMatch = arr[0].match(/:(.*?);/);
+    const mime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+  }
 
+  @ViewChild('authChoiceModal') authChoiceModalElement!: ElementRef;
+
+  openAuthChoiceModal() {
+    const draft: any = { ...this.submitForm.value };
+
+    if (this.mainImagePreview && this.mainImageFile) {
+      draft['savedMainImagePreview'] = this.mainImagePreview;
+      draft['savedMainImageName'] = this.mainImageFile.name;
+    }
+
+    if (this.galleryImagePreviews && this.galleryImagePreviews.length > 0) {
+      draft['savedGalleryImages'] = this.galleryImagePreviews.map(img => ({
+        url: img.url,
+        name: img.name
+      }));
+    }
+
+    localStorage.setItem('postPropertyFormDraft', JSON.stringify(draft));
+    localStorage.setItem('redirectAfterAuth', '/post-property-free');
+
+    if (typeof bootstrap !== 'undefined' && this.authChoiceModalElement) {
+      const modal = new bootstrap.Modal(this.authChoiceModalElement.nativeElement);
+      modal.show();
+    } else if (typeof $ !== 'undefined') {
+      $('#authChoiceModal').modal('show');
+    }
+  }
+
+  restoreDraftData() {
+    const draftDataJson = localStorage.getItem('postPropertyFormDraft');
+    if (!draftDataJson) return;
+
+    try {
+      const draftData = JSON.parse(draftDataJson);
+      this.submitForm.patchValue(draftData);
+
+      if (draftData.property_for) {
+        this.onPropertyFor(draftData.property_for);
+      }
+      if (draftData.property_type) {
+        this.selectedPropertyType = draftData.property_type;
+        this.onChange({ target: { value: draftData.property_type } });
+      }
+      if (draftData.bedroom) {
+        const bedNum = Number(draftData.bedroom);
+        if (!isNaN(bedNum) && bedNum > 0) {
+          this.numberOfBeds = bedNum;
+          this.initBedrooms();
+          this.selectBedRoom(bedNum, '');
+          if (draftData.bedroomsize && Array.isArray(draftData.bedroomsize)) {
+            this.bedroomsize.patchValue(draftData.bedroomsize);
+          }
+        } else if (draftData.bedroom) {
+          this.selectOption(String(draftData.bedroom));
+        }
+      } else if (draftData.bedroomsize && Array.isArray(draftData.bedroomsize) && draftData.bedroomsize.length > 0) {
+        this.numberOfBeds = draftData.bedroomsize.length;
+        this.initBedrooms();
+        this.bedroomsize.patchValue(draftData.bedroomsize);
+      }
+
+      if (draftData.bathroom) {
+        const bathNum = Number(draftData.bathroom);
+        if (!isNaN(bathNum) && bathNum > 0) {
+          this.selectBathRooms(bathNum, '');
+        } else if (draftData.bathroom) {
+          this.selectBathRoomOption(String(draftData.bathroom));
+        }
+      }
+      if (draftData.balconies) {
+        const balcNum = Number(draftData.balconies);
+        if (!isNaN(balcNum) && balcNum > 0) {
+          this.selectBalconies(balcNum, '');
+        } else if (draftData.balconies) {
+          this.selectBalconiesOption(String(draftData.balconies));
+        }
+      }
+      if (draftData.floor_no) {
+        const directFloorPills = ['Lower Basement', 'Upper Basement', 'Ground', 1, 2, 3, 4, '1', '2', '3', '4'];
+        if (directFloorPills.includes(draftData.floor_no)) {
+          this.selectFloor(draftData.floor_no, 'floor');
+        } else {
+          this.selectFloorOption(String(draftData.floor_no));
+        }
+      }
+      if (draftData.total_floor) {
+        const tfNum = Number(draftData.total_floor);
+        if (!isNaN(tfNum) && tfNum > 0) {
+          this.selectTotalFloor(tfNum);
+        } else if (draftData.total_floor) {
+          this.selectTotalFloorDropdownOption(String(draftData.total_floor));
+        }
+      }
+      if (draftData.furnishing_status) {
+        this.selectFurnishType(draftData.furnishing_status);
+      }
+      if (draftData.total_no_of_flats) {
+        this.selectFlatSociety(draftData.total_no_of_flats);
+      }
+      if (draftData.age_of_construction) {
+        this.ageofconstruction();
+      }
+      if (draftData.current_business_sector) {
+        this.currentbusinesssector();
+      }
+      if (draftData.transaction_type) {
+        this.ontransactiontype();
+      }
+      if (draftData.assured_returns) {
+        this.onAssuredReturns();
+      }
+      if (draftData.currently_leased_out) {
+        this.onLeased();
+      }
+
+      // Restore main image
+      if (draftData.savedMainImagePreview) {
+        this.mainImagePreview = draftData.savedMainImagePreview;
+        this.mainImageFile = this.dataURLtoFile(
+          draftData.savedMainImagePreview,
+          draftData.savedMainImageName || 'main_image.jpg'
+        );
+        this.submitForm.patchValue({ property_main_img: this.mainImageFile.name });
+      }
+
+      // Restore gallery images
+      if (draftData.savedGalleryImages && Array.isArray(draftData.savedGalleryImages)) {
+        this.galleryImagePreviews = [];
+        this.propertyImageFiles = [];
+        const filenames: string[] = [];
+        draftData.savedGalleryImages.forEach((img: any, idx: number) => {
+          if (img.url) {
+            const file = this.dataURLtoFile(img.url, img.name || `gallery_${idx}.jpg`);
+            this.propertyImageFiles.push(file);
+            this.galleryImagePreviews.push({
+              id: Date.now() + Math.random() + idx,
+              url: img.url,
+              file: file,
+              name: file.name
+            });
+            filenames.push(file.name);
+          }
+        });
+        if (filenames.length > 0) {
+          this.submitForm.patchValue({ property_img: filenames as any });
+        }
+      }
+
+      // Restore City -> Locality -> Project dropdowns
+      if (draftData.property_city) {
+        this.submitForm.patchValue({ property_city: draftData.property_city });
+        this.PostpropertyfreeService.getLocalities(draftData.property_city).subscribe((res: any) => {
+          this.localities = res.responseData.data;
+          if (draftData.property_locality) {
+            this.submitForm.patchValue({ property_locality: draftData.property_locality });
+            this.PostpropertyfreeService.getProjectList(draftData.property_locality).subscribe((pRes: any) => {
+              this.projectList = pRes.responseData.addproject;
+              if (draftData.project_id) {
+                this.submitForm.patchValue({ project_id: draftData.project_id });
+              }
+            });
+          }
+        });
+      }
+    } catch (e) {
+      console.error('Error parsing property draft:', e);
+    }
+  }
+
+  closeAuthChoiceModal() {
+    if (typeof bootstrap !== 'undefined' && this.authChoiceModalElement) {
+      const modalInstance = bootstrap.Modal.getInstance(this.authChoiceModalElement.nativeElement);
+      if (modalInstance) {
+        modalInstance.hide();
+      }
+    } else if (typeof $ !== 'undefined') {
+      $('#authChoiceModal').modal('hide');
+    }
+  }
+
+  goToLogin() {
+    this.closeAuthChoiceModal();
+    this.route.navigate(['/login']);
+  }
+
+  goToRegister() {
+    this.closeAuthChoiceModal();
+    this.route.navigate(['/registration']);
+  }
+
+  propertyForm() {
     this.cleanupHiddenControlValidators();
 
     console.log(this.submitForm.invalid);
@@ -1815,6 +2044,14 @@ export class PostPropertyFreeComponent {
       this.toastr.error('Please fill all required fields.');
       return;
     }
+
+    if (!this.isUserLoggedIn) {
+      this.openAuthChoiceModal();
+      return;
+    }
+
+    const userId = localStorage.getItem('userId');
+    this.submitForm.patchValue({ user_id: userId });
 
     const formData = new FormData();
     let payload = { ...this.submitForm.value };
@@ -1871,102 +2108,102 @@ export class PostPropertyFreeComponent {
 
 
     Object.keys(this.submitForm.value).forEach((key: string) => {
- 
-    // IMPORTANT:
-    // Don't send these two as normal text fields.
-    // We will send the actual File objects below.
-    if (
-      key === 'property_main_img' ||
-      key === 'property_img'
-    ) {
-      return;
-    }
- 
-    const value = (this.submitForm.value as any)[key];
- 
-    if (value !== null && value !== undefined) {
- 
-      if (Array.isArray(value)) {
- 
-        value.forEach((item: any) => {
-          formData.append(key + '[]', item);
-        });
- 
-      } else {
- 
-        formData.append(key, value.toString());
- 
+
+      // IMPORTANT:
+      // Don't send these two as normal text fields.
+      // We will send the actual File objects below.
+      if (
+        key === 'property_main_img' ||
+        key === 'property_img'
+      ) {
+        return;
       }
-    }
-  });
- 
- 
-  /*
-  |--------------------------------------------------------------------------
-  | MAIN PROPERTY IMAGE
-  |--------------------------------------------------------------------------
-  */
- 
-  if (this.mainImageFile) {
- 
-    formData.append(
-      'property_main_img',
-      this.mainImageFile,
-      this.mainImageFile.name
-    );
- 
-  }
- 
- 
-  /*
-  |--------------------------------------------------------------------------
-  | PROPERTY MULTIPLE IMAGES
-  |--------------------------------------------------------------------------
-  */
- 
-  if (this.propertyImageFiles.length > 0) {
- 
-    this.propertyImageFiles.forEach((file: File) => {
- 
-      formData.append(
-        'property_img[]',
-        file,
-        file.name
-      );
- 
+
+      const value = (this.submitForm.value as any)[key];
+
+      if (value !== null && value !== undefined) {
+
+        if (Array.isArray(value)) {
+
+          value.forEach((item: any) => {
+            formData.append(key + '[]', item);
+          });
+
+        } else {
+
+          formData.append(key, value.toString());
+
+        }
+      }
     });
- 
-  }
- 
- 
-  /*
-  |--------------------------------------------------------------------------
-  | DEBUG - REMOVE AFTER TESTING
-  |--------------------------------------------------------------------------
-  */
- 
-  console.log('========== FORM DATA ==========');
- 
-  formData.forEach((value: any, key: string) => {
- 
-    if (value instanceof File) {
- 
-      console.log(
-        key,
-        'FILE:',
-        value.name,
-        value.type,
-        value.size
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | MAIN PROPERTY IMAGE
+    |--------------------------------------------------------------------------
+    */
+
+    if (this.mainImageFile) {
+
+      formData.append(
+        'property_main_img',
+        this.mainImageFile,
+        this.mainImageFile.name
       );
- 
-    } else {
- 
-      console.log(key, value);
- 
+
     }
- 
-  });
- 
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PROPERTY MULTIPLE IMAGES
+    |--------------------------------------------------------------------------
+    */
+
+    if (this.propertyImageFiles.length > 0) {
+
+      this.propertyImageFiles.forEach((file: File) => {
+
+        formData.append(
+          'property_img[]',
+          file,
+          file.name
+        );
+
+      });
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | DEBUG - REMOVE AFTER TESTING
+    |--------------------------------------------------------------------------
+    */
+
+    console.log('========== FORM DATA ==========');
+
+    formData.forEach((value: any, key: string) => {
+
+      if (value instanceof File) {
+
+        console.log(
+          key,
+          'FILE:',
+          value.name,
+          value.type,
+          value.size
+        );
+
+      } else {
+
+        console.log(key, value);
+
+      }
+
+    });
+
 
 
     this.http.post(`${environment.apiUrl}addproperty`, formData).subscribe(
@@ -2005,51 +2242,51 @@ export class PostPropertyFreeComponent {
   propertyImageFiles: File[] = [];
   galleryImagePreviews: { id: number; url: string; file: File; name: string }[] = [];
 
-   
-onMainImageChange(event: any): void {
- 
-  const file = event.target.files && event.target.files[0];
- 
-  if (!file) {
 
-    return;
+  onMainImageChange(event: any): void {
+
+    const file = event.target.files && event.target.files[0];
+
+    if (!file) {
+
+      return;
+
+    }
+
+    if (!file.type.startsWith('image/')) {
+
+      alert('Please select a valid image file.');
+
+      return;
+
+    }
+
+    // Store the ACTUAL file
+
+    this.mainImageFile = file;
+
+    // This is only for displaying filename/form value
+
+    this.submitForm.patchValue({
+
+      property_main_img: file.name
+
+    });
+
+    // Preview only
+
+    const reader = new FileReader();
+
+    reader.onload = (e: any) => {
+
+      this.mainImagePreview = e.target.result;
+
+    };
+
+    reader.readAsDataURL(file);
 
   }
- 
-  if (!file.type.startsWith('image/')) {
 
-    alert('Please select a valid image file.');
-
-    return;
-
-  }
- 
-  // Store the ACTUAL file
-
-  this.mainImageFile = file;
- 
-  // This is only for displaying filename/form value
-
-  this.submitForm.patchValue({
-
-    property_main_img: file.name
-
-  });
- 
-  // Preview only
-
-  const reader = new FileReader();
- 
-  reader.onload = (e: any) => {
-
-    this.mainImagePreview = e.target.result;
-
-  };
- 
-  reader.readAsDataURL(file);
-
-}
- 
 
   removeMainImage(): void {
     this.mainImagePreview = null;
@@ -2107,103 +2344,103 @@ onMainImageChange(event: any): void {
     this.isMainDragOver = false;
   }
 
- 
-onMainImageDrop(event: DragEvent): void {
- 
-  event.preventDefault();
 
-  event.stopPropagation();
- 
-  this.isMainDragOver = false;
- 
-  if (
+  onMainImageDrop(event: DragEvent): void {
 
-    event.dataTransfer &&
+    event.preventDefault();
 
-    event.dataTransfer.files &&
+    event.stopPropagation();
 
-    event.dataTransfer.files.length > 0
+    this.isMainDragOver = false;
 
-  ) {
- 
-    const file = event.dataTransfer.files[0];
- 
-    if (!file.type.startsWith('image/')) {
+    if (
 
-      alert('Please drop a valid image file.');
+      event.dataTransfer &&
 
-      return;
+      event.dataTransfer.files &&
 
-    }
- 
-    // Store actual File
+      event.dataTransfer.files.length > 0
 
-    this.mainImageFile = file;
- 
-    // Filename only for form/display
+    ) {
 
-    this.submitForm.patchValue({
+      const file = event.dataTransfer.files[0];
 
-      property_main_img: file.name
+      if (!file.type.startsWith('image/')) {
 
-    });
- 
-    // Preview
+        alert('Please drop a valid image file.');
 
-    const reader = new FileReader();
- 
-    reader.onload = (e: any) => {
+        return;
 
-      this.mainImagePreview = e.target.result;
+      }
 
-    };
- 
-    reader.readAsDataURL(file);
+      // Store actual File
 
-  }
+      this.mainImageFile = file;
 
-}
+      // Filename only for form/display
 
-onPropertyImagesChange(event: any): void {
+      this.submitForm.patchValue({
 
-  const files = event.target.files;
+        property_main_img: file.name
 
-  if (!files || files.length === 0) {
-    return;
-  }
-
-  for (let i = 0; i < files.length; i++) {
-
-    const file = files[i];
-
-    if (!file.type.startsWith('image/')) {
-      continue;
-    }
-
-    // Store actual File for FormData upload
-    this.propertyImageFiles.push(file);
-
-    // Generate base64 preview for the UI thumbnail grid
-    const reader = new FileReader();
-    reader.onload = (e: any) => {
-      // Push into galleryImagePreviews — this is what the HTML template uses
-      this.galleryImagePreviews.push({
-        id: Date.now() + Math.random(),
-        url: e.target.result,   // base64 for <img src> preview only
-        file: file,
-        name: file.name
       });
-      // Update form value with filenames (not base64)
-      const filenames = this.galleryImagePreviews.map(img => img.name);
-      this.submitForm.patchValue({ property_img: filenames as any });
-    };
-    reader.readAsDataURL(file);
+
+      // Preview
+
+      const reader = new FileReader();
+
+      reader.onload = (e: any) => {
+
+        this.mainImagePreview = e.target.result;
+
+      };
+
+      reader.readAsDataURL(file);
+
+    }
 
   }
 
-}
- 
- 
+  onPropertyImagesChange(event: any): void {
+
+    const files = event.target.files;
+
+    if (!files || files.length === 0) {
+      return;
+    }
+
+    for (let i = 0; i < files.length; i++) {
+
+      const file = files[i];
+
+      if (!file.type.startsWith('image/')) {
+        continue;
+      }
+
+      // Store actual File for FormData upload
+      this.propertyImageFiles.push(file);
+
+      // Generate base64 preview for the UI thumbnail grid
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        // Push into galleryImagePreviews — this is what the HTML template uses
+        this.galleryImagePreviews.push({
+          id: Date.now() + Math.random(),
+          url: e.target.result,   // base64 for <img src> preview only
+          file: file,
+          name: file.name
+        });
+        // Update form value with filenames (not base64)
+        const filenames = this.galleryImagePreviews.map(img => img.name);
+        this.submitForm.patchValue({ property_img: filenames as any });
+      };
+      reader.readAsDataURL(file);
+
+    }
+
+  }
+
+
   onGalleryDragOver(event: DragEvent): void {
     event.preventDefault();
     event.stopPropagation();

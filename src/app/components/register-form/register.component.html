@@ -57,7 +57,7 @@
                       <select name="registerAs" *ngIf="
                           servicess == 1 || formData.register_as == 'service-provider'
                         " required [(ngModel)]="formData.register_type" (change)="onProviderChange($event)">
-                        <option value selected disabled>Select Service Type</option>
+                        <option value="" selected disabled>Select Service Type</option>
                         <option *ngFor="let service of servicesimgss" [value]="service.name">
                           {{ service.name }}
                         </option>
@@ -131,8 +131,11 @@
                   up</button>
               </div>
               <div>
-                <a target="_blank" routerlink="/login" class="dropdown-item pt-2" href="/login">Already registered?
+                <a target="_blank" routerlink="/login" class="dropdown-item text-center pt-2" href="/login">Already registered?
                   <span> Login Now </span></a>
+                   <a routerLink="/" href="/" class="pt-2 back_to_website_link">
+          <span><i class="fa-solid fa-arrow-left me-1"></i> Back to Home</span>
+        </a>
               </div>
             </div>
           </form>

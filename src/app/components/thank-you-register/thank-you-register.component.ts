@@ -31,7 +31,13 @@ export class ThankYouRegisterComponent implements OnInit, OnDestroy {
 
   goHome(): void {
     clearInterval(this.intervalId);
-    this.router.navigate(['/']);
+    const redirectUrl = localStorage.getItem('redirectAfterAuth');
+    if (redirectUrl) {
+      localStorage.removeItem('redirectAfterAuth');
+      this.router.navigate([redirectUrl]);
+    } else {
+      this.router.navigate(['/']);
+    }
   }
 
   ngOnDestroy(): void {

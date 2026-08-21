@@ -55,3 +55,419 @@
     width: 150px;
 }
 }
+
+/* User Profile Icon & Dropdown Styles */
+.profile-header-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.profile-icon-circle-top {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.user-initial-text {
+  color: #ff6b3b;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  font-family: 'Sora', sans-serif;
+  user-select: none;
+}
+
+.profile-header-wrap .profile-icon-link:hover .profile-icon-circle-top {
+  border-color: #e53726;
+  box-shadow: 0 3px 10px rgba(255, 107, 59, 0.2);
+  transform: scale(1.05);
+}
+
+/* Profile Header Wrapper & Circle Avatar */
+.profile-header-wrap {
+  position: relative !important;
+  display: flex;
+  align-items: center;
+}
+
+.profile-icon-link {
+  padding: 4px !important;
+  transition: all 0.25s ease !important;
+  cursor: pointer;
+  text-decoration: none !important;
+  border: none;
+  background: transparent;
+}
+
+.profile-icon-circle-top {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s ease;
+}
+
+.profile-icon-link:hover .profile-icon-circle-top,
+.profile-icon-link[aria-expanded="true"] .profile-icon-circle-top {
+  border-color: #ff5444;
+  box-shadow: 0 4px 14px rgba(255, 84, 68, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Profile Dropdown Main Card */
+.profile-header-wrap .profile-custom-dropdown {
+  position: absolute !important;
+  top: calc(100% + 12px) !important;
+  right: 0 !important;
+  left: auto !important;
+  width: 290px !important;
+  max-width: 320px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  z-index: 99999 !important;
+  box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.14), 0 6px 16px -4px rgba(0, 0, 0, 0.06) !important;
+  background: #ffffff !important;
+  border: 1px solid #f1f5f9 !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  display: none !important;
+  transform-origin: top right;
+  animation: profileDropdownFade 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.profile-header-wrap .profile-custom-dropdown.show {
+  display: block !important;
+}
+
+@keyframes profileDropdownFade {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Logged Out Header Banner */
+.profile-dropdown-welcome {
+  background: linear-gradient(135deg, #fff5f4 0%, #ffedea 100%);
+  padding: 16px 18px;
+  border-bottom: 1px solid #ffe3df;
+}
+
+.welcome-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.welcome-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.welcome-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.welcome-sub {
+  font-size: 12px;
+  color: #64748b;
+  margin: 2px 0 0 0;
+  line-height: 1.3;
+}
+
+.btn-login-primary {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  background: linear-gradient(135deg, #ff5444 0%, #e53726 100%) !important;
+  color: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  padding: 10px 16px !important;
+  border-radius: 10px !important;
+  text-decoration: none !important;
+  box-shadow: 0 4px 14px rgba(229, 55, 38, 0.3) !important;
+  transition: all 0.2s ease !important;
+  border: none !important;
+}
+
+.btn-login-primary:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 18px rgba(229, 55, 38, 0.4) !important;
+  color: #ffffff !important;
+}
+
+/* Sign Up Prompt Row */
+.profile-signup-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: #ffffff;
+  border-bottom: none;
+}
+
+.signup-prompt {
+  font-size: 13px;
+  color: #475569;
+  font-weight: 500;
+}
+
+.signup-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #e53726;
+  font-weight: 700;
+  font-size: 13px;
+  text-decoration: none;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.signup-link:hover {
+  color: #c82e1e;
+  transform: translateX(2px);
+}
+
+/* Dropdown Links List */
+.profile-dropdown-links,
+.profile-dropdown-body {
+  padding: 8px 10px;
+}
+
+.profile-dropdown-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 10px 12px !important;
+  color: #334155 !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  border-radius: 10px !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+}
+
+.profile-dropdown-item:hover {
+  background-color: #fff1f0 !important;
+  color: #e53726 !important;
+}
+
+.profile-dropdown-item .icon-wrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  transition: all 0.2s ease;
+}
+
+.profile-dropdown-item:hover .icon-wrap {
+  background: #ffe5e2;
+  color: #e53726;
+}
+
+.badge-free {
+  margin-left: auto;
+  background: linear-gradient(135deg, #ff5444 0%, #e53726 100%);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 12px;
+  letter-spacing: 0.5px;
+}
+
+/* Logged In User Banner */
+.profile-dropdown-user-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.profile-avatar-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff5444 0%, #d32f2f 100%);
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(229, 55, 38, 0.3);
+  flex-shrink: 0;
+}
+
+.profile-user-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.user-name-display {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-email-display {
+  font-size: 12px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.profile-dropdown-footer {
+  padding: 10px 12px 12px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.btn-logout-action {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  background-color: #fef2f2 !important;
+  color: #dc2626 !important;
+  font-weight: 700 !important;
+  border-radius: 10px !important;
+  padding: 9px 14px !important;
+  border: 1px solid #fecaca !important;
+  font-size: 14px !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-logout-action:hover {
+  background-color: #fee2e2 !important;
+  color: #b91c1c !important;
+  border-color: #fca5a5 !important;
+}
+
+
+
+/* List Property Header Button with Upper-Left Shining FREE Badge */
+.header_btn .post_btn {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-family: "Sora", sans-serif !important;
+  color: #000000 !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+  line-height: 28px !important;
+  border: 2px solid #e53726 !important;
+  text-decoration: none !important;
+  padding: 5px 14px !important;
+  border-radius: 5px !important;
+  background: transparent !important;
+  text-transform: uppercase !important;
+  transition: all 0.2s ease !important;
+}
+
+.header_btn .post_btn:hover {
+  background: rgba(229, 55, 38, 0.05) !important;
+  color: #000000 !important;
+}
+
+.header_btn .post_btn .free_badge_tag {
+  position: absolute !important;
+  top: -11px !important;
+  left: 6px !important;
+  background-color: #e53726 !important;
+  color: #ffffff !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  padding: 3px 8px !important;
+  border-radius: 10px !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+  user-select: none !important;
+  z-index: 2 !important;
+  overflow: hidden !important;
+  box-shadow: 0 2px 8px rgba(229, 55, 38, 0.45) !important;
+}
+
+/* Shining Sheen Animation on FREE Badge Tag (Upper Corner to Lower Corner) */
+.header_btn .post_btn .free_badge_tag::after {
+  content: "" !important;
+  position: absolute !important;
+  top: -100% !important;
+  left: -100% !important;
+  width: 200% !important;
+  height: 200% !important;
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0) 35%,
+    rgba(255, 255, 255, 0.95) 50%,
+    rgba(255, 255, 255, 0) 65%,
+    transparent 100%
+  ) !important;
+  animation: freeTagShine 2.2s infinite ease-in-out !important;
+  pointer-events: none !important;
+}
+
+@keyframes freeTagShine {
+  0% {
+    transform: translate(-100%, -100%);
+  }
+  35% {
+    transform: translate(100%, 100%);
+  }
+  100% {
+    transform: translate(100%, 100%);
+  }
+}
+
+@media (max-width: 991px) {
+  .header_btn .post_btn,
+  .post_btn {
+    display: none !important;
+  }
+  .profile-header-wrap {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
