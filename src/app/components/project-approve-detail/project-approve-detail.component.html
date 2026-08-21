@@ -573,9 +573,12 @@
             <ng-container *ngIf="projectBrochureImages && projectBrochureImages.length > 0">
               <ngx-slick-carousel class="carousel brochure-slick-slider" #brochureSlickModal="slick-carousel"
                 [config]="brochureSlideConfig">
-                <div ngxSlickItem *ngFor="let img of projectBrochureImages" class="slide px-2">
+                <div ngxSlickItem *ngFor="let img of projectBrochureImages; let idx = index" class="slide px-2">
                   <div class="brochure-image">
-                    <img [src]="img" alt="Brochure Image" class="img-fluid cursor-pointer">
+                    <a [href]="img" data-fancybox="brochure-images" data-type="image" [attr.data-caption]="'Brochure Image ' + (idx + 1)"
+                      (click)="openBrochureGallery(idx, $event)">
+                      <img [src]="img" alt="Brochure Image" class="img-fluid cursor-pointer">
+                    </a>
                   </div>
                 </div>
               </ngx-slick-carousel>

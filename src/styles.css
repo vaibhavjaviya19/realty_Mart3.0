@@ -6822,7 +6822,7 @@ button.contact-buy-btn {
   padding: 9px 15px;
   background-color: var(--red-E63525);
   color: var(--white);
-  font-size: 16px;
+  font-size: 15px;
   line-height: 28px;
   font-weight: 600;
   border-radius: 5px;
@@ -8047,4 +8047,18 @@ body.gallery-open .modal-backdrop {
   text-decoration: underline;
   background: transparent;
   cursor: pointer;
+}
+
+/* Fancybox 5 Image Zoom Fix */
+.fancybox__container img,
+.fancybox__container .fancybox__image {
+  max-width: none !important;
+  max-height: none !important;
+  user-select: none;
+}
+
+.fancybox__container .fancybox__content,
+.fancybox__container .fancybox__slide--image .fancybox__content {
+  max-width: none !important;
+  max-height: none !important;
 }

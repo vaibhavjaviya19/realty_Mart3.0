@@ -442,28 +442,85 @@ export class ProjectApproveDetailComponent implements OnInit, AfterViewInit, OnD
   ngAfterViewInit(): void {
     (window as any).__projectDetailActive = true;
     setTimeout(() => this.checkScrollPosition());
-    Fancybox.bind('[data-fancybox="gallery"]', {
 
-    });
-    Fancybox.bind('[data-fancybox="floor-plans"]', {
+    const fancyboxConfig: any = {
+      Images: {
+        zoom: true,
+        initialSize: "fit",
+        Panzoom: {
+          maxScale: 5,
+        },
+        panzoom: {
+          maxScale: 5,
+        },
+      },
+      Panzoom: {
+        maxScale: 5,
+      },
+      panzoom: {
+        maxScale: 5,
+      },
+      click: "toggleZoom",
+      doubleClick: "toggleZoom",
+      wheel: "zoom",
       Toolbar: {
         display: {
           left: [],
-          middle: [],
-          right: ["zoom", "close"],
+          middle: ["zoomIn", "zoomOut", "toggle1to1"],
+          right: ["close"],
         },
       },
-    });
-    Fancybox.bind('[data-fancybox="master-plans"]', {
-      Toolbar: {
-        display: {
-          left: [],
-          middle: [],
-          right: ["zoom", "close"],
-        },
-      },
-    });
+    };
 
+    Fancybox.bind('[data-fancybox="gallery"]', fancyboxConfig);
+    Fancybox.bind('[data-fancybox="floor-plans"]', fancyboxConfig);
+    Fancybox.bind('[data-fancybox="master-plans"]', fancyboxConfig);
+    Fancybox.bind('[data-fancybox="brochure-images"]', fancyboxConfig);
+  }
+
+  openBrochureGallery(startIndex: number = 0, event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    if (!this.projectBrochureImages || this.projectBrochureImages.length === 0) return;
+
+    Fancybox.show(
+      this.projectBrochureImages.map((img, idx) => ({
+        src: img,
+        type: 'image',
+        caption: `Brochure Image ${idx + 1}`
+      })),
+      {
+        startIndex: startIndex,
+        Images: {
+          zoom: true,
+          initialSize: "fit",
+          Panzoom: {
+            maxScale: 5,
+          },
+          panzoom: {
+            maxScale: 5,
+          },
+        },
+        Panzoom: {
+          maxScale: 5,
+        },
+        panzoom: {
+          maxScale: 5,
+        },
+        click: "toggleZoom",
+        doubleClick: "toggleZoom",
+        wheel: "zoom",
+        Toolbar: {
+          display: {
+            left: [],
+            middle: ["zoomIn", "zoomOut", "toggle1to1"],
+            right: ["close"],
+          },
+        },
+      } as any
+    );
   }
 
   moveNext(event: Event, index: number) {
@@ -2031,13 +2088,25 @@ export class ProjectApproveDetailComponent implements OnInit, AfterViewInit, OnD
 
             // Brochure Images: from project_brochure_images
             const rawBrochureImages = this.singleproject?.project_brochure_images;
-            if (Array.isArray(rawBrochureImages) && rawBrochureImages.length > 0) {
-              this.projectBrochureImages = rawBrochureImages;
-            } else if (typeof rawBrochureImages === 'string' && rawBrochureImages.trim()) {
-              this.projectBrochureImages = rawBrochureImages.split(',').map((s: string) => s.trim()).filter((s: string) => s);
-            } else {
-              this.projectBrochureImages = [];
-            }
+            const parsedBrochure = this.parseImagesArray(rawBrochureImages);
+            this.projectBrochureImages = parsedBrochure.map((img: string) => {
+              if (!img) return '';
+              let imgStr = String(img).trim();
+              const lower = imgStr.toLowerCase();
+              if (lower === 'null' || lower === 'undefined' || lower.endsWith('/null') || lower.endsWith('/undefined') || lower.endsWith('/')) {
+                return '';
+              }
+              if (imgStr.startsWith('http') || imgStr.startsWith('data:') || imgStr.startsWith('/assets')) {
+                return imgStr;
+              }
+              if (imgStr.startsWith('backend/') || imgStr.includes('backend/public/images')) {
+                return imgStr.startsWith('/') ? `https://realtymart.com${imgStr}` : `https://realtymart.com/${imgStr}`;
+              }
+              if (imgStr.startsWith('/')) {
+                return `https://realtymart.com${imgStr}`;
+              }
+              return `https://realtymart.com/backend/public/images/project_brochure_images/${imgStr}`;
+            }).filter((url: string) => Boolean(url));
             if (this.singleproject.project_video.length > 0) {
               // BHK types actually come from the floor_plans array (each entry
               // has its own bhk_type + carpet_area), not a flat "bhk" field on
